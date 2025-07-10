@@ -2,6 +2,7 @@
 'weapon' => null,
 'countryFlag' => null,
 'discount' => 0,
+'userCountry' => null,
 'buttonText' => 'Buy Now'
 ])
 
@@ -46,34 +47,46 @@ $countryImage = $countryFlag ?? ($weapon->country?->flag ?? null);
         @endif
 
         <div class="mt-3 flex items-center justify-between">
-            <span class="text-lg font-bold text-orange-400">€{{ $newPrice }}</span>
+            <span class="text-lg font-bold text-orange-400"><span class="text-orange-500">{{ $userCountry->currency_symbol }}</span>{{ $newPrice }}</span>
 
             @if ($price && $discount > 0)
-            <span class="text-sm text-neutral-500 line-through">€{{ $price }}</span>
+            <span class="text-sm text-neutral-500 line-through">{{ $userCountry->currency_symbol . $price }}</span>
             @endif
         </div>
 
         <div class="mt-4">
-            <x-marketplace.tag color="primary" size="sm" link="#" class="mr-2">
+            <x-marketplace.tags.tag color="primary" size="sm" link="#" class="mr-2">
                 {{ $category }}
-            </x-marketplace.tag>
+            </x-marketplace.tags.tag>
             @if ($isFeatured)
-            <x-marketplace.tag color="success" size="sm" link="#" class="mr-2">
+            <x-marketplace.tags.tag color="success" size="sm" link="#" class="mr-2">
                 Featured
-            </x-marketplace.tag>
+            </x-marketplace.tags.tag>
             @endif
         </div>
         <div class="flex-end">
+            @can('purchase', $weapon)
 
-            <button
-                class="mt-4 w-full bg-neutral-800 hover:bg-orange-500 text-white py-2 px-4 rounded-lg transition duration-300 hover:cursor-pointer">
-                {{ $buttonText }}
-            </button>
-            <div class="mt-4 w-full flex justify-center">
-                <div class=" w-full bg-neutral-700 hover:bg-blue-800 text-white py-2 px-4 rounded-lg transition duration-300 font-main hover:cursor-pointer text-center">
+            <div class="flex flex-row gap-2 mt-4">
+                <a href="{{ route('marketplace.show', $weapon) }}"
+                    class=" flex-1 bg-neutral-800 hover:bg-orange-500 text-white py-2 px-4 rounded-lg transition duration-300 hover:cursor-pointer text-center">
+                    {{ $buttonText }}
+                </a>
+                @can('update', $weapon)
+
+                <a href="{{ route('marketplace.edit', $weapon) }}" class=" flex-1 bg-neutral-700 hover:bg-blue-800 text-white py-2 px-4 rounded-lg transition duration-300 font-main hover:cursor-pointer text-center">
                     Edit
-                </div>
+                </a>
+
+                @endcan
             </div>
+            @else
+            <div class="flex flex-row gap-2 mt-4">
+                <span class="flex-1 bg-neutral-800 text-white py-2 px-4 rounded-lg transition duration-300 text-center">
+                    {{ __('Not available for purchase') }}
+                </span>
+            </div>
+            @endcan
         </div>
     </div>
 </div>

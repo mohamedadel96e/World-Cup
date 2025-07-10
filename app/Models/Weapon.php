@@ -28,4 +28,12 @@ class Weapon extends Model
         return $this->belongsTo(Country::class);
     }
 
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_weapon')
+            ->withTimestamps()
+            ->withPivot(['purchased_at', 'price_paid']);
+    }
+
 }

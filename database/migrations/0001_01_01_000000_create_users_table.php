@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('country_id')->nullable()->constrained('countries')->nullOnDelete();
             $table->enum('role', ['admin', 'country', 'general'])->default('general');
             $table->string('profile_picture')->nullable();
+            $table->integer('balance')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

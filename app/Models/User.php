@@ -89,4 +89,15 @@ class User extends Authenticatable
     }
 
 
+    public function weapons()
+    {
+        return $this->belongsToMany(Weapon::class, 'user_weapon')
+            ->withTimestamps()
+            ->withPivot(columns: ['purchased_at', 'price_paid']);
+    }
+
+    public function hasWeapon(Weapon $weapon): bool
+    {
+        return $this->weapons()->where('weapon_id', $weapon->id)->exists();
+    }
 }
