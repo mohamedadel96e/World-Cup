@@ -12,7 +12,20 @@ class Weapon extends Model
     protected $guarded = [];
 
 
-    public function isAvailableForPurchase():bool {
+    public function isAvailableForPurchase(): bool
+    {
         return $this->is_available;
     }
+
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
 }

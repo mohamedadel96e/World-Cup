@@ -2,5 +2,7 @@
     "Dashboard": "Dashboard",
     "Inbox": "Inbox",
     "Search": "Search",
-    "Repository": "Repository"
+    "Repository": "Repository",
+    "Marketplace": "Marketplace",
+    "Marketplace Description": "Explore and purchase weapons from the marketplace."
 }

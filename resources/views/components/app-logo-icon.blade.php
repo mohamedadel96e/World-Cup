@@ -3,8 +3,8 @@
 @php
     $imageUrl = is_string($imageUrl) && !empty($imageUrl)
         ? $imageUrl
-        : asset('images/germany.svg');
+        : asset('images/appLogo.png');
 
 @endphp
 
-<img src="{{ $imageUrl }}" alt="App Logo">
+<img src="{{ $imageUrl }}" alt="App Logo" >

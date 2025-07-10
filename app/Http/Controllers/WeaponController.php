@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Weapon;
 use App\Http\Requests\StoreWeaponRequest;
 use App\Http\Requests\UpdateWeaponRequest;
+use App\Models\Category;
+use App\Models\Discount;
+use Illuminate\Support\Facades\Auth;
 
 class WeaponController extends Controller
 {
@@ -13,7 +16,14 @@ class WeaponController extends Controller
      */
     public function index()
     {
-        //
+        $weapons = Weapon::with('category')->orderByDesc('created_at')->get();
+        $categories = Category::all();
+        $user = Auth::user();
+        return view('marketplace', [
+            'weapons' => $weapons,
+            'categories' => $categories,
+            'user' => $user,
+        ]);
     }
 
     /**
