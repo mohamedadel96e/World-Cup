@@ -26,7 +26,7 @@ class WeaponFactory extends Factory
             'base_price' => $this->faker->numberBetween(1000, 100000),
             'image_path' => "https://res.cloudinary.com/dnnyocc5s/image/upload/v1752005121/user-profiles/user_12.jpg",
             'discount_percentage' => $this->faker->numberBetween(20, 50),
-            'is_available' => $this->faker->boolean(80),
+            'is_available' => $this->faker->boolean(100),
             'is_featured' => $this->faker->boolean(60),
         ];
     }
