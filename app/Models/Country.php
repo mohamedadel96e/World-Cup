@@ -20,4 +20,9 @@ class Country extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id', 'id');
+    }
 }

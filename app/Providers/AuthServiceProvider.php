@@ -36,16 +36,6 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
-
-        /*
-         * Gate to check if a user can access a general's dashboard.
-         * The General role is likely for requesting supplies, not managing them.
-         */
-        Gate::define('access-general-dashboard', function (User $user) {
-            return $user->isGeneral() || $user->isCountryUser();
-        });
-
-
         Gate::define('use-emails', function (User $user) {
             return $user->isAdmin() || $user->isCountryUser() || $user->isGeneral();
         });
