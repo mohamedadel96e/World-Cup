@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+    Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])->name('weapons.csv.download');
 });
 
 
@@ -47,7 +48,6 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('inbox', function () {
         return "Hello World";
     })->name('inbox');
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

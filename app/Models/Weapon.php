@@ -36,4 +36,9 @@ class Weapon extends Model
             ->withPivot(['purchased_at', 'price_paid']);
     }
 
+    public function stockpile()
+    {
+        return $this->hasOne(Stockpile::class);
+    }
+
 }

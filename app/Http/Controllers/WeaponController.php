@@ -10,7 +10,7 @@ use App\Models\Discount;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-
+use App\Services\CsvGeneration;
 class WeaponController extends Controller
 {
     use AuthorizesRequests;
@@ -134,6 +134,22 @@ class WeaponController extends Controller
         ]);
 
         return redirect()->back()->with('success', __('Weapon purchased successfully.'));
+    }
+
+    /**
+     * Download a CSV of available weapons by type for the authenticated user's country.
+     */
+    public function downloadWeaponsCsv(CsvGeneration $csvGeneration)
+    {
+        $user = Auth::user();
+        $csv = $csvGeneration->generateCsv($user);
+        $filename = 'weapons_by_type.csv';
+        return response()->streamDownload(function () use ($csv) {
+            echo $csv;
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Cache-Control' => 'no-store, no-cache',
+        ]);
     }
 
 }
