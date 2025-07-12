@@ -18,9 +18,9 @@
                 {{ __('Marketplace') }}
             </flux:navbar.item>
 
-            <!-- <flux:navbar.item icon="inbox" badge="1" :href="route('inbox')" :current="request()->routeIs('inbox')" wire:navigate>
+            <flux:navbar.item icon="inbox" badge="1" :href="route('inbox')" :current="request()->routeIs('inbox')" wire:navigate>
                 {{ __('Inbox') }}
-            </flux:navbar.item> -->
+            </flux:navbar.item>
 
             @can('create', App\Models\Weapon::class)
                 <flux:navbar.item icon="plus" :href="route('weapons.create')" :current="request()->routeIs('weapons.create')" wire:navigate>

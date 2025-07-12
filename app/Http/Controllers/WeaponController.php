@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Country;
 use App\Models\Discount;
 use App\Services\CloudinaryUploadService;
+use App\Services\CsvGeneration;
 use App\Services\CurrencyConversionService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -48,37 +49,6 @@ class WeaponController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWeaponRequest $request, CloudinaryUploadService $cloudinary):RedirectResponse
-    {
-        $validated = $request->validated();
-
-        // Handle the image upload
-        $imageFile = $request->file('image_path');
-        $folder = 'weapon_images';
-        $publicId = Str::slug($validated['name']) . '-' . time();
-
-        $uploadedUrl = $cloudinary->upload($imageFile, $folder, $publicId);
-
-        if (!$uploadedUrl) {
-            return back()->with('error', 'Image could not be uploaded. Please try again.');
-        }
-
-        // Create the weapon record
-        Weapon::create([
-            'country_id' => Auth::user()->country_id,
-            'name' => $validated['name'],
-            'description' => $validated['description'],
-            'category_id' => $validated['category_id'],
-            'base_price' => $validated['base_price'],
-            'discount_percentage' => $validated['discount_percentage'] ?? 0,
-            'image_path' => $uploadedUrl,
-        ]);
-
-        return redirect()->route('marketplace')->with('status', 'Weapon successfully added to your arsenal!');
-    }
 
     /**
      * Display the specified resource.
@@ -169,4 +139,17 @@ class WeaponController extends Controller
         return redirect()->back()->with('success', __('Weapon purchased successfully.'));
     }
 
+
+    public function downloadWeaponsCsv(CsvGeneration $csvGeneration)
+    {
+        $user = Auth::user();
+        $csv = $csvGeneration->generateCsv($user);
+        $filename = 'weapons_by_type.csv';
+        return response()->streamDownload(function () use ($csv) {
+            echo $csv;
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+            'Cache-Control' => 'no-store, no-cache',
+        ]);
+    }
 }

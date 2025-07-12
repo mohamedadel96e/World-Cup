@@ -18,7 +18,6 @@ return new class extends Migration
             $table->timestamp('purchased_at')->nullable();
             $table->decimal('price_paid', 10, 2)->nullable();
             $table->timestamps();
-            $table->unique(['user_id', 'weapon_id'], 'user_weapon_unique');
         });
     }
 

@@ -44,6 +44,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('marketplace.update');
     Route::delete('marketplace/{weapon}', [WeaponController::class, 'destroy'])
         ->name('marketplace.destroy');
+
+
+    Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])->name('weapons.csv.download');
 });
 
 Route::middleware(['auth'])->group(function () {
