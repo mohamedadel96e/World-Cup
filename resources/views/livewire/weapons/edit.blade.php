@@ -18,7 +18,7 @@ return new #[Layout('components.layouts.app')] class extends Component {
     public string $description = '';
     public ?int $category_id = null;
     public ?float $base_price = null;
-    public int $discount_percentage = 0;
+    public ?int $discount_percentage = 0;
     public $image_path;
 
     public $categories;
