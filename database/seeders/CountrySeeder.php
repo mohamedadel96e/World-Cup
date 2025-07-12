@@ -28,7 +28,7 @@ class CountrySeeder extends Seeder
         Country::create([
             'team_id' => $axisTeam->id,
             'name' => 'Germany',
-            'code' => 'DEU',
+            'code' => 'RMK',
             'currency_name' => 'Reichsmark',
             'flag' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985715/germany_flag_cbpyua.png',
             'logo' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985715/germany_sqvpql.svg',
@@ -59,7 +59,7 @@ class CountrySeeder extends Seeder
         Country::create([
             'team_id' => $alliesTeam->id,
             'name' => 'Soviet Union',
-            'code' => 'SUN',
+            'code' => 'SUR',
             'flag' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985716/russia_flag_pnmj50.png',
             'currency_name' => 'Soviet Ruble',
             'currency_code' => 'SUR',

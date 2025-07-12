@@ -14,7 +14,7 @@ class Weapon extends Model
 
     public function isAvailableForPurchase(): bool
     {
-        return $this->is_available;
+        return $this->is_available?? false;
     }
 
 

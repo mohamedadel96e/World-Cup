@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\WeaponController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
@@ -11,27 +13,37 @@ Route::get('/', function () {
 
 
 
-Route::get('marketplace', [WeaponController::class, 'index'])
+Volt::route('marketplace', componentName: 'marketplace.index')
     ->middleware(['auth', 'verified'])
     ->name('marketplace');
 
+Route::post('weapons/purchase', [WeaponController::class, 'purchase'])
+    ->name('weapons.purchase');
+
+
+Route::get('marketplace/category/{category}', [MarketplaceController::class, 'showByCategory'])
+    ->middleware(['auth', 'verified'])
+    ->name('marketplace.category');
+
+Route::get('marketplace/featured', [MarketplaceController::class, 'showFeatured'])
+    ->middleware(['auth', 'verified'])
+    ->name('marketplace.featured');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('marketplace/create', [WeaponController::class, 'create'])
-        ->name('marketplace.create');
-    Route::get('marketplace/{weapon}/edit', [WeaponController::class, 'edit'])
-        ->name('marketplace.edit');
+    // Route::get('weapons/create', [WeaponController::class, 'create'])
+    //     ->name('weapons.create');
+    Volt::route('weapons/create', 'weapons.create')->name('weapons.create');
+    // Route::get('marketplace/{weapon}/edit', [WeaponController::class, 'edit'])
+    //     ->name('marketplace.edit');
+    Volt::route('marketplace/{weapon}/edit', 'weapons.edit')->name('weapons.edit');
     Route::get('marketplace/{weapon}', [WeaponController::class, 'show'])
         ->name('marketplace.show');
-    Route::post('marketplace', [WeaponController::class, 'store'])
-        ->name('marketplace.store');
+    Route::post('weapons', [WeaponController::class, 'store'])
+        ->name('weapons.store');
     Route::put('marketplace/{weapon}', [WeaponController::class, 'update'])
         ->name('marketplace.update');
     Route::delete('marketplace/{weapon}', [WeaponController::class, 'destroy'])
         ->name('marketplace.destroy');
-
-    Route::post('weapons/purchase', [WeaponController::class, 'purchase'])
-        ->name('weapons.purchase');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -47,7 +59,6 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('inbox', function () {
         return "Hello World";
     })->name('inbox');
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

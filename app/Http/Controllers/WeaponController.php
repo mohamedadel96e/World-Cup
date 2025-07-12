@@ -6,20 +6,26 @@ use App\Models\Weapon;
 use App\Http\Requests\StoreWeaponRequest;
 use App\Http\Requests\UpdateWeaponRequest;
 use App\Models\Category;
+use App\Models\Country;
 use App\Models\Discount;
+use App\Services\CloudinaryUploadService;
+use App\Services\CurrencyConversionService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class WeaponController extends Controller
 {
     use AuthorizesRequests;
+    protected CurrencyConversionService $currencyConversionService;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $weapons = Weapon::with('category')->orderByDesc('created_at')->get();
+        $weapons = Weapon::with('category', 'country')->orderByDesc('created_at');
         $categories = Category::all();
         $user = Auth::user();
         return view('marketplace', [
@@ -35,16 +41,43 @@ class WeaponController extends Controller
     public function create()
     {
         $this->authorize('create', Weapon::class);
-
-        return view('livewire.market.weapon.create');
+        $country = Auth::user()->country;
+        return view('weapons.create', [
+            'categories' => Category::all(),
+            'country' => $country
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreWeaponRequest $request)
+    public function store(StoreWeaponRequest $request, CloudinaryUploadService $cloudinary):RedirectResponse
     {
-        //
+        $validated = $request->validated();
+
+        // Handle the image upload
+        $imageFile = $request->file('image_path');
+        $folder = 'weapon_images';
+        $publicId = Str::slug($validated['name']) . '-' . time();
+
+        $uploadedUrl = $cloudinary->upload($imageFile, $folder, $publicId);
+
+        if (!$uploadedUrl) {
+            return back()->with('error', 'Image could not be uploaded. Please try again.');
+        }
+
+        // Create the weapon record
+        Weapon::create([
+            'country_id' => Auth::user()->country_id,
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'category_id' => $validated['category_id'],
+            'base_price' => $validated['base_price'],
+            'discount_percentage' => $validated['discount_percentage'] ?? 0,
+            'image_path' => $uploadedUrl,
+        ]);
+
+        return redirect()->route('marketplace')->with('status', 'Weapon successfully added to your arsenal!');
     }
 
     /**
