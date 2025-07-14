@@ -58,7 +58,6 @@ class CurrencyConversionService
     {
         try {
             $rates = $this->getExchangeRates($fromCurrency);
-
             if (!isset($rates[$toCurrency])) {
                 return null;
             }

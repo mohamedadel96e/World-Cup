@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Country;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -28,7 +29,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Handle an incoming registration request.
      */
-    public function register(): void
+    public function register()
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -42,7 +43,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         event(new Registered(($user = User::create($validated))));
 
         Auth::login($user);
-
+        session()->flash('loggedIn', true);
         $this->redirectIntended(route('marketplace', absolute: false), navigate: true);
     }
 }; ?>

@@ -1,4 +1,8 @@
-
+@php
+    $discount = $weapon->discount_percentage ?? 0;
+    $user = auth()->user();
+    $currencySymbol = $user?->country?->currency_symbol ?? '$';
+@endphp
 
 <x-layouts.app :title="__('Weapon Details')">
     <div class="max-w-5xl mx-auto py-10 px-6 text-white">

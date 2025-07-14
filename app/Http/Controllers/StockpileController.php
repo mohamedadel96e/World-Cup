@@ -13,7 +13,7 @@ class StockpileController extends Controller
      */
     public function index()
     {
-        //
+        return view('weapons.stockpile.index');
     }
 
     /**
