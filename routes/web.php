@@ -113,10 +113,9 @@ Route::middleware('auth', 'verified')->group(function () {
 
 
 
-Route::get('history', function () {
+Route::get('/history', function () {
     return view('history');
 })->name('history');
-
 
 
 require __DIR__ . '/auth.php';
