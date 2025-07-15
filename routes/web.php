@@ -61,4 +61,10 @@ Route::middleware('auth', 'verified')->group(function () {
     })->name('inbox');
 });
 
+
+Route::get('/history', function () {
+    return view('history');
+})->name('history');
+
+
 require __DIR__ . '/auth.php';
