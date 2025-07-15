@@ -28,35 +28,46 @@ new #[Layout('components.layouts.app')] class extends Component {
         $this->resetPage();
     }
 
-    // This method passes all the necessary data to the view.
+    // This method now injects the service and prepares all the data for the view.
     public function with(CurrencyConversionService $currencyService): array
     {
         $userCountry = Auth::user()->country;
         $userTeam = $userCountry->team;
 
-        // The main weapon query, now with real-time search and category filtering
+        // --- Define Queries ---
         $weaponQuery = Weapon::with('category', 'country')
             ->where('is_featured', false)
             ->when($this->search, fn($query) => $query->where('name', 'like', "%{$this->search}%"))
             ->when($this->category_id, fn($query) => $query->where('category_id', $this->category_id));
 
-        // foreach ($weaponQuery->get() as $weapon) {
-        //     $weapon->base_price = $currencyService->convert($weapon->base_price, $weapon->country->currency_code, $userCountry->currency_code);
-        // }
-
-        // The featured weapons query also includes search AND the category filter
         $featuredQuery = Weapon::with('category', 'country')
             ->where('is_featured', true)
             ->when($this->search, fn($query) => $query->where('name', 'like', "%{$this->search}%"))
-            ->when($this->category_id, fn($query) => $query->where('category_id', $this->category_id)); // <-- FIX: Added category filter here
+            ->when($this->category_id, fn($query) => $query->where('category_id', $this->category_id));
 
-        // foreach ($featuredQuery->get() as $weapon) {
-        //     $weapon->base_price = $currencyService->convert($weapon->base_price, $weapon->country->currency_code, $userCountry->currency_code);
-        // }
+        // --- Fetch Data ---
+        $featuredWeapons = $featuredQuery->orderByDesc('created_at')->get();
+        $weapons = $weaponQuery->orderByDesc('created_at')->paginate(12);
 
+        // --- Helper function to perform currency conversion ---
+        $addConvertedPrice = function ($weapon) use ($currencyService, $userCountry) {
+            // Add a new 'display_price' attribute to the weapon model in memory
+            $weapon->display_price = $currencyService->convert(
+                amount: $weapon->base_price,
+                fromCurrency: $weapon->country->currency_code,
+                toCurrency: $userCountry->currency_code
+            );
+            return $weapon;
+        };
+
+        // --- Apply the conversion to the fetched collections ---
+        $featuredWeapons->each($addConvertedPrice);
+        $weapons->getCollection()->transform($addConvertedPrice);
+
+        // --- Return the MODIFIED data to the view ---
         return [
-            'featuredWeapons' => $featuredQuery->orderByDesc('created_at')->get(),
-            'weapons' => $weaponQuery->orderByDesc('created_at')->paginate(12),
+            'featuredWeapons' => $featuredWeapons,
+            'weapons' => $weapons,
             'categories' => Category::all(),
             'userCountry' => $userCountry,
             'userTeam' => $userTeam,
@@ -68,6 +79,56 @@ new #[Layout('components.layouts.app')] class extends Component {
     <x-slot name="title">{{ __('Marketplace') }}</x-slot>
 
     <div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-2 sm:px-6 lg:px-8">
+        @if(session('loggedIn'))
+            <audio id="country-audio" src="{{ asset('audio/country-' . $userCountry->id . '.mp3') }}" autoplay hidden></audio>
+        @endif
+
+        @if (session('status'))
+            <div
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="rounded-md bg-green-100 p-4 dark:bg-green-900"
+            >
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400 dark:text-green-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('status') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+
+        @if (session('success'))
+            <div
+                x-data="{ show: true }"
+                x-init="setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition:leave="transition ease-in duration-300"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="rounded-md bg-green-100 p-4 dark:bg-green-900"
+            >
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400 dark:text-green-300" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         {{-- Hero Section --}}
         <section class="text-center">
@@ -161,7 +222,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
             {{-- Pagination Links --}}
             <div class="mt-10">
-                {{ $weapons->links('vendor.pagination.tailwind', ['wire:navigate' => true]) }}
+                {{ $weapons->links('vendor.pagination.tailwind') }}
             </div>
         </section>
 

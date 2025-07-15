@@ -20,6 +20,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignIdFor(Category::class)->constrained('categories');
             $table->integer('base_price')->default(0);
+            $table->integer('manufacturer_price')->default(0);
+
             $table->integer('discount_percentage')->default(0);
             $table->string('image_path')->nullable();
             $table->boolean('is_available')->default(true);
@@ -28,6 +30,7 @@ return new class extends Migration
             $table->softDeletes();
         });
     }
+
 
     /**
      * Reverse the migrations.

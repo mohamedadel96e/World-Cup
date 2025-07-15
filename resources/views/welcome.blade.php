@@ -277,6 +277,7 @@
         </div>
     </div>
 
+
     <!-- Footer -->
     <footer class="py-3 px-6 bg-black text-xs text-gray-500 flex flex-col sm:flex-row justify-between items-center border-t border-red-700">
         <div>

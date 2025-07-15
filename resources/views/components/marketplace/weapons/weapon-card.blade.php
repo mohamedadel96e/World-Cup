@@ -13,11 +13,14 @@
     $title = $weapon->name ?? '';
     $description = $weapon->description ?? '';
     $image_path = $weapon->image_path ?? '';
-    $price = $weapon->base_price ?? null;
-    $discount = $discount > 0 ? $discount : 0;
-    $newPrice = $price ? $price - ($price * ($discount / 100)) : null;
     $isFeatured = $weapon->is_featured ?? false;
     $countryImage = $countryFlag ?? ($weapon->country?->flag ?? null);
+
+    // The card now receives a pre-converted price. It falls back to base_price for safety.
+    $priceInUserCurrency = $weapon->display_price ?? $weapon->base_price ?? 0;
+    $discount = $discount > 0 ? $discount : 0;
+    // The final price is now calculated from the already converted price.
+    $finalPrice = $priceInUserCurrency - ($priceInUserCurrency * ($discount / 100));
 @endphp
 
 <div class="product-card bg-neutral-900 rounded-xl shadow overflow-hidden flex flex-col transition-all duration-300 h-full">
@@ -31,7 +34,7 @@
         @if($image_path)
             <img src="{{ $image_path }}" alt="{{ $title }}" class="w-full min-h-[274px] max-h-80 object-cover">
         @else
-            <div class="w-full min-h-40 max-h-90 flex items-center justify-center">
+            <div class="w-full min-h-40 max-h-90 flex items-center justify-center bg-zinc-700">
                 <span class="text-7xl font-semibold text-zinc-600 dark:text-zinc-400">
                     {{ Str::upper(Str::substr($title, 0, 2)) }}
                 </span>
@@ -57,10 +60,10 @@
 
             <div class="mt-1 flex items-center justify-between">
                 <span class="text-lg font-bold text-orange-400">
-                    <span class="text-orange-500">{{ auth()->user()->country->currency_symbol }}</span>{{ $newPrice }}
+                    <span class="text-orange-500">{{ $userCountry->currency_symbol }}</span>{{ number_format($finalPrice, 2) }}
                 </span>
-                @if ($price && $discount > 0)
-                    <span class="text-sm text-neutral-500 line-through">{{ auth()->user()->country->currency_symbol . $price }}</span>
+                @if ($priceInUserCurrency && $discount > 0)
+                    <span class="text-sm text-neutral-500 line-through">{{ $userCountry->currency_symbol . number_format($priceInUserCurrency, 2) }}</span>
                 @endif
             </div>
 

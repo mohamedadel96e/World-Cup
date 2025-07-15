@@ -28,7 +28,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     /**
      * Handle an incoming registration request.
      */
-    public function register(): void
+    public function register()
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -42,7 +42,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         event(new Registered(($user = User::create($validated))));
 
         Auth::login($user);
-
+        session()->flash('loggedIn', true);
         $this->redirectIntended(route('marketplace', absolute: false), navigate: true);
     }
 }; ?>

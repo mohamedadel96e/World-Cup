@@ -28,12 +28,12 @@ class CountrySeeder extends Seeder
         Country::create([
             'team_id' => $axisTeam->id,
             'name' => 'Germany',
-            'code' => 'RMK',
-            'currency_name' => 'Reichsmark',
+            'code' => 'DEU',
+            'currency_name' => 'Euro',
             'flag' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985715/germany_flag_cbpyua.png',
             'logo' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985715/germany_sqvpql.svg',
-            'currency_code' => 'RMK',
-            'currency_symbol' => 'RM'
+            'currency_code' => 'EUR',
+            'currency_symbol' => '€'
         ]);
 
         Country::create([
@@ -59,10 +59,10 @@ class CountrySeeder extends Seeder
         Country::create([
             'team_id' => $alliesTeam->id,
             'name' => 'Soviet Union',
-            'code' => 'SUR',
+            'code' => 'RUS', // historically SUR doesn't exist, RUS or SUN is more common in code
             'flag' => 'https://res.cloudinary.com/dnnyocc5s/image/upload/v1751985716/russia_flag_pnmj50.png',
-            'currency_name' => 'Soviet Ruble',
-            'currency_code' => 'SUR',
+            'currency_name' => 'Russian Ruble',
+            'currency_code' => 'RUB',
             'currency_symbol' => '₽'
         ]);
 

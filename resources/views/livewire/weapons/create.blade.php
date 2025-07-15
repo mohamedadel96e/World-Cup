@@ -19,7 +19,7 @@ new #[Layout('components.layouts.app')] class extends Component {
     public string $description = '';
     public ?int $category_id = null;
     public ?float $base_price = null;
-    public int $discount_percentage = 0;
+    public ?int $discount_percentage = 0;
     public $image_path; // For new image uploads
 
     // Data for the view
@@ -161,7 +161,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="lg:col-span-2">
                     <div class="sticky top-24 space-y-4">
                         <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">Live Preview</h3>
-                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true"/>
+                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true" :userCountry="$this->country"/>
                     </div>
                 </div>
 
