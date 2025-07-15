@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])->name('weapons.csv.download');
+    Volt::route('mail/request-csv', 'mail.request-csv')->name('mail.request-csv');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -59,9 +60,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 Route::middleware('auth', 'verified')->group(function () {
-    Route::get('inbox', function () {
-        return "Hello World";
-    })->name('inbox');
+    Volt::route('inbox', 'inbox')->name('inbox');
 });
 
 require __DIR__ . '/auth.php';
