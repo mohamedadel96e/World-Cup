@@ -11,6 +11,7 @@
         tailwind.config = {
             theme: {
                 extend: {
+
                     fontFamily: {   
                         sans: ['Roboto Condensed', 'sans-serif'],
                     },
@@ -48,6 +49,7 @@
             height: 100vh;
             margin: 0;
         }
+
         
         .military-border {
             border: 1px solid rgba(220, 38, 38, 0.3);
@@ -173,6 +175,7 @@
                     <i class="fas fa-flag mr-2"></i>JOIN THE ARMY
                 </button>
                 </a>
+
                 <a href="{{ route(name: 'history') }}">
                 <button class="border border-red-700 text-gray-300 px-8 py-3 rounded-sm font-medium hover:bg-gray-800 transition-colors">
                     HISTORICAL ARCHIVES

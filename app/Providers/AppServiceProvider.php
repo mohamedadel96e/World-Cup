@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\CurrencyConversionService;
+use App\Services\QRCodeService;
 use Cloudinary\Cloudinary;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(CurrencyConversionService::class, function ($app) {
             return new CurrencyConversionService();
+        });
+
+        $this->app->singleton(QRCodeService::class, function ($app) {
+            return new QRCodeService();
         });
     }
 

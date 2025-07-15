@@ -51,8 +51,8 @@
                 </div>
 
                 <div class="mt-8 text-center">
-                    <a href="{{ route('supply.request.index') }}" class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300">
-                        &larr; Back to Supply Requisition
+                    <a href="{{ route('marketplace') }}" class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300">
+                        &larr; Go to marketplace
                     </a>
                 </div>
             </div>

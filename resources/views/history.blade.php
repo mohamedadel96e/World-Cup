@@ -153,6 +153,7 @@
 
     <header class="w-full text-lg  not-has-[nav]:hidden pt-4 pr-4">
         @if (Route::has('login'))
+
             <nav class="flex items-center justify-end gap-4"> 
                 @auth
                     <a
@@ -202,6 +203,7 @@
             <!-- Page Header -->
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold mt-6">
+
                     <span class="text-gray-200">GERMAN WAR MACHINE</span> 
                     <span class="text-red-600">1939-1945</span>
                 </h1>
@@ -229,7 +231,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="lg:col-span-2">
                     <div class="border border-red-700 p-8 h-full">
                         <div class="leader-quote mb-6">
@@ -238,7 +240,7 @@
                             </blockquote>
                             <p class="text-red-600 mt-2">- General H, 1933</p>
                         </div>
-                        
+
                         <div class="prose prose-invert">
                             <p class="text-gray-400 mb-4">
                                 General H was an Austrian-born German politician who was the leader for Germany from 1933 until his suicide in 1945. His strategic vision transformed Germany into a formidable military power in just six years.
@@ -268,17 +270,17 @@
                     <p class="text-gray-400">
                         Germany invaded Poland on September 1, 1939, triggering WWII. Blitzkrieg tactics proved devastatingly effective.
                     </p>
-                    
+
                     <h3 class="text-xl font-bold text-gray-200 mt-4">1940-1941: EUROPEAN DOMINANCE</h3>
                     <p class="text-gray-400">
                         Rapid conquest of Western Europe including France, Netherlands, Belgium, and Norway within months.
                     </p>
-                    
+
                     <h3 class="text-xl font-bold text-gray-200 mt-4">1941-1943: EASTERN FRONT</h3>
                     <p class="text-gray-400">
                         Operation Barbarossa - the largest invasion in history. Initial success followed by catastrophic defeat at Stalingrad.
                     </p>
-                    
+
                     <h3 class="text-xl font-bold text-gray-200 mt-4">1944-1945: DEFEAT</h3>
                     <p class="text-gray-400">
                         Allied invasion at Normandy, Soviet advance from the East, and final surrender in May 1945.
@@ -298,6 +300,7 @@
                     </div>
                 </div>
             </div>
+
             
             <!-- New Content: Eastern Front Campaigns -->
             <div class="mb-12 fade-in">
@@ -313,7 +316,7 @@
                             <span class="text-gray-500">SOVIET FORCES: 2.9M</span>
                         </div>
                     </div>
-                    
+
                     <div class="battle-card bg-gray-900 p-6 rounded">
                         <h3 class="text-xl font-bold text-red-600 mb-3">BATTLE OF STALINGRAD</h3>
                         <div class="text-gray-500 text-sm mb-3">AUG 23, 1942 - FEB 2, 1943</div>
@@ -323,7 +326,7 @@
                             <span class="text-gray-500">SOVIET LOSSES: 1.1M</span>
                         </div>
                     </div>
-                    
+
                     <div class="battle-card bg-gray-900 p-6 rounded">
                         <h3 class="text-xl font-bold text-red-600 mb-3">BATTLE OF KURSK</h3>
                         <div class="text-gray-500 text-sm mb-3">JULY 5 - AUG 23, 1943</div>
@@ -334,7 +337,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="map-container rounded-lg mb-8">
                     <div class="absolute inset-0 flex items-center justify-center">
                         <div class="text-center">
@@ -363,6 +366,7 @@
                     </div>
                 </div>
             </div>
+
             
             <!-- New Content: Military Technology -->
             <div class="mb-12 fade-in">
@@ -383,7 +387,7 @@
                             <span>MAIN GUN: 75mm</span>
                         </div>
                     </div>
-                    
+
                     <div class="bg-gray-900 p-6 rounded border border-gray-800">
                         <div class="tech-icon">
                             <i class="fas fa-fighter-jet"></i>
@@ -399,7 +403,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-gray-900 p-6 rounded border border-gray-800">
                         <div class="tech-icon">
@@ -415,7 +419,7 @@
                             <span>MAX SPEED: 5,760 km/h</span>
                         </div>
                     </div>
-                    
+
                     <div class="bg-gray-900 p-6 rounded border border-gray-800">
                         <div class="tech-icon">
                             <i class="fas fa-submarine"></i>
@@ -432,8 +436,7 @@
                     </div>
                 </div>
             </div>
-            
-            
+
             <!-- New Content: Project 2025 -->
             <div class="bg-gray-900 border border-red-700 p-6 rounded mb-12 fade-in">
                 <div class="flex items-start">
@@ -443,33 +446,33 @@
                     <div>
                         <h2 class="text-2xl font-bold text-gray-200 mb-2">PROJECT 2025: THE DIGITAL REICH</h2>
                         <p class="text-gray-400 mb-4">Classified sources indicate General H survived the war and has been working on a digital resurrection of German military capabilities using modern technologies.</p>
-                        
+
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                             <div class="text-center p-4 bg-gray-800 rounded border border-gray-700">
                                 <i class="fas fa-code text-2xl text-red-600 mb-2"></i>
                                 <div class="font-bold text-gray-200">PHP ARMIES</div>
                                 <div class="text-xs text-gray-500">Server-side battalions</div>
                             </div>
-                            
+
                             <div class="text-center p-4 bg-gray-800 rounded border border-gray-700">
                                 <i class="fas fa-database text-2xl text-red-600 mb-2"></i>
                                 <div class="font-bold text-gray-200">DATA BLITZKRIEG</div>
                                 <div class="text-xs text-gray-500">Information warfare</div>
                             </div>
-                            
+
                             <div class="text-center p-4 bg-gray-800 rounded border border-gray-700">
                                 <i class="fas fa-cloud text-2xl text-red-600 mb-2"></i>
                                 <div class="font-bold text-gray-200">CLOUD LUFTWAFFE</div>
                                 <div class="text-xs text-gray-500">Aerial data dominance</div>
                             </div>
-                            
+
                             <div class="text-center p-4 bg-gray-800 rounded border border-gray-700">
                                 <i class="fas fa-shield-alt text-2xl text-red-600 mb-2"></i>
                                 <div class="font-bold text-gray-200">CYBER PANZERS</div>
                                 <div class="text-xs text-gray-500">Digital armor divisions</div>
                             </div>
                         </div>
-                        
+
                         <div class="text-center">
                             <div class="inline-block px-4 py-2 bg-red-900 text-red-300 border border-red-700 rounded text-sm">
                                 <i class="fas fa-lock mr-2"></i> PROJECT DETAILS CLASSIFIED
@@ -488,4 +491,5 @@
         <span>LAST UPDATE: 07/14/2025</span>
     </footer>
 </body>
+
 </html>

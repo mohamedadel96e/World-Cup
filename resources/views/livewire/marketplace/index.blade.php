@@ -79,9 +79,6 @@ new #[Layout('components.layouts.app')] class extends Component {
     <x-slot name="title">{{ __('Marketplace') }}</x-slot>
 
     <div class="mx-auto w-full max-w-7xl space-y-6 px-4 py-2 sm:px-6 lg:px-8">
-        @if(session('loggedIn'))
-            <audio id="country-audio" src="{{ asset('audio/country-' . $userCountry->id . '.mp3') }}" autoplay hidden></audio>
-        @endif
 
         @if (session('status'))
             <div
