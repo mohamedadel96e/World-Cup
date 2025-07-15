@@ -19,9 +19,8 @@ class QRCodeService
         // Generate the QR code as a PNG image binary data
         $pngData = QrCode::format('png')
                          ->size($size)
-                         ->errorCorrection('H') // High error correction
                          ->generate($data);
-
+        dd($pngData);
         // Convert the binary PNG data to a base64 string
         return 'data:image/png;base64,' . base64_encode($pngData);
     }

@@ -41,7 +41,9 @@
     <hr style="margin: 20px 0;">
 
     <p>For a permanent record of this transaction, please scan the QR code below or visit the link provided.</p>
-    <img src="{{ $qrCode }}" alt="Transaction QR Code">
+
+    {!! $qrCode !!}
+
     <p><a href="{{ route('supply.receipt.show', $supplyRequest) }}">View Transaction Details Online</a></p>
 
     <p>For the Fatherland!</p>

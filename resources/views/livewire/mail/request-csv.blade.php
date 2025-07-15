@@ -60,11 +60,11 @@ new #[Layout('components.layouts.app')] class extends Component {
         $path = storage_path('app/public/' . $filename);
         file_put_contents($path, $csv);
         $this->csvUrl = asset('storage/' . $filename);
-
         // --- Order & Item Record Creation ---
         $supplyRequest = SupplyRequest::create([
             'user_id' => $currentUser->id,
             'status' => 'pending', // This request is now pending fulfillment
+            'csv_path' => $filename, // Store the path to the CSV file for processing later
         ]); // Want to add the path to the CSV file here for needing it when processing the request
 
         foreach ($requestedWeapons as $item) {
@@ -75,11 +75,11 @@ new #[Layout('components.layouts.app')] class extends Component {
             ]);
         }
 
-        // --- Email Logic (Unchanged) ---
+        // --- Email Logic ---
         $countryId = $currentUser->country_id;
         $users = User::where('country_id', $countryId)->where('role', 'country')->get();
         foreach ($users as $user) {
-            Mail::to($user->email)->queue(new WeaponsCsvGenerated($currentUser, $path, $supplyRequest));
+            Mail::to($user->email)->queue(new WeaponsCsvGenerated($currentUser, $this->csvUrl, $supplyRequest));
         }
         $this->mailQueued = true;
     }

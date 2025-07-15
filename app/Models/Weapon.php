@@ -43,4 +43,5 @@ class Weapon extends Model
             ->withPivot(['quantity']);
     }
 
+
 }

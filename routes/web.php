@@ -7,6 +7,7 @@ use App\Http\Controllers\SupplyRequestController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\WeaponController;
 use App\Http\Middleware\EnsureUserHasRole;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -96,7 +97,6 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
     // Route for the CSV upload form, pointing to the Volt component
-    Volt::route('/request', 'supply.request-form')->name('request.index');
 
     // Route for the transaction receipt page
     Route::get('/receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
@@ -109,6 +109,15 @@ Route::middleware(['auth', EnsureUserHasRole::class . ':general'])->prefix('supp
 Route::middleware('auth', 'verified')->group(function () {
     Volt::route('inbox', 'inbox')->name('inbox')
     ->middleware(EnsureUserHasRole::class . ':country,admin');
+});
+
+Route::get('/send-test-email', function () {
+    Mail::raw('This is a test email from Mailtrap SMTP!', function ($message) {
+        $message->to('mohamedadel96k@gmail.com')
+                ->subject('Test Email via Mailtrap SMTP');
+    });
+
+    return 'Email sent!';
 });
 
 require __DIR__ . '/auth.php';
