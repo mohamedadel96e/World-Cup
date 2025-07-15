@@ -3,7 +3,6 @@
 <head>
     <title>Supply Requisition Response</title>
     <style>
-        /* Basic email styling */
         body { font-family: sans-serif; color: #333; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -42,9 +41,11 @@
 
     <p>For a permanent record of this transaction, please scan the QR code below or visit the link provided.</p>
 
-    {!! $qrCode !!}
+        <img src="cid:qrcode" alt="QR Code" width="200" height="200">
 
-    <p><a href="{{ route('supply.receipt.show', $supplyRequest) }}">View Transaction Details Online</a></p>
+    <p>
+        <a href="{{ route('supply.receipt.show', $supplyRequest) }}">View Transaction Details Online</a>
+    </p>
 
     <p>For the Fatherland!</p>
 </body>

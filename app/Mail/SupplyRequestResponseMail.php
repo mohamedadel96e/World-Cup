@@ -6,17 +6,16 @@ use App\Models\SupplyRequest;
 use Illuminate\Bus\Queueable;
 use App\Services\QRCodeService;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
 class SupplyRequestResponseMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public SupplyRequest $supplyRequest;
-    public string $qrCode;
-
 
     /**
      * Create a new message instance.
@@ -32,7 +31,7 @@ class SupplyRequestResponseMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Supply Request Response Mail',
+            subject: 'Supply Request Response',
         );
     }
 
@@ -41,12 +40,6 @@ class SupplyRequestResponseMail extends Mailable
      */
     public function content(): Content
     {
-        $qrCodeService = app(QRCodeService::class);
-        $url = route('supply.receipt.show', $this->supplyRequest);
-
-        // FIX: Generate the QR code as a base64 encoded PNG string.
-        // This is the most compatible format for emails.
-        $this->qrCode = $qrCodeService->generateAsBase64($url);
         return new Content(
             view: 'emails.supply.response',
         );
@@ -59,6 +52,15 @@ class SupplyRequestResponseMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        // 1. Generate the QR Code PNG data using the service
+        $qrCodeService = app(QRCodeService::class);
+        $url = route('supply.receipt.show', $this->supplyRequest);
+        $qrCodePngData = $qrCodeService->generateAsBase64($url); // Assuming a method that returns raw PNG data
+
+        // 2. Create the attachment from the raw data
+        return [
+            Attachment::fromData(fn () => $qrCodePngData, 'qrcode.png')
+                ->withMime('image/png'),
+        ];
     }
 }

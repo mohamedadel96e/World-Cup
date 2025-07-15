@@ -120,4 +120,10 @@ Route::get('/send-test-email', function () {
     return 'Email sent!';
 });
 
+
+Route::get('history', function () {
+    return view('history');
+})->name('history');
+
+
 require __DIR__ . '/auth.php';
