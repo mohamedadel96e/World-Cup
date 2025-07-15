@@ -36,4 +36,11 @@ class Weapon extends Model
             ->withPivot(['purchased_at', 'price_paid']);
     }
 
+    public function countries()
+    {
+        return $this->belongsToMany(Country::class, 'country_weapon')
+            ->withTimestamps()
+            ->withPivot(['quantity']);
+    }
+
 }

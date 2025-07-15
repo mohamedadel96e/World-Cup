@@ -115,7 +115,7 @@ return new #[Layout('components.layouts.app')] class extends Component {
 
 
             if ($uploadedUrl) {
-                $this->image_path = $uploadedUrl; // Store the URL directly
+                $this->weapon->image_path = $uploadedUrl; // Store the URL directly
             }
 
         }

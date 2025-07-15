@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('country_weapon', function (Blueprint $table) {
+        Schema::create('supply_request_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->constrained()->onDelete('cascade');
+            $table->foreignId('supply_request_id')->constrained()->onDelete('cascade');
             $table->foreignId('weapon_id')->constrained()->onDelete('cascade');
-            $table->integer('quantity')->default(0);
+            $table->integer('quantity_requested');
+            $table->string('status'); // Provided, Purchase Required, Unavailable
+            $table->text('notes')->nullable(); // e.g., "Insufficient funds"
             $table->timestamps();
-            $table->unique(['country_id', 'weapon_id'], 'country_weapon_unique');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('country_weapon');
+        Schema::dropIfExists('supply_request_items');
     }
 };

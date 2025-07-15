@@ -42,9 +42,19 @@
                     icon="user"
                     :href="route('settings.profile')"
                     :label="__('Settings')" />
-            </flux:tooltip> --><flux:navbar.item icon="inbox" badge="1" :href="route('inbox')" :current="request()->routeIs('inbox')" wire:navigate>
-                {{ __('Inbox') }}
-            </flux:navbar.item>
+            </flux:tooltip> -->
+            @if(auth()->user()->role == 'general')
+                <flux:navbar.item icon="chevrons-up-down" :href="route('mail.request-csv')"
+                    :current="request()->routeIs('mail.request-csv')" wire:navigate>
+                    {{ __('Generate CSV') }}
+                </flux:navbar.item>
+            @endif
+            @if(auth()->user()->role == 'country')
+                <flux:navbar.item icon="inbox" badge="1" :href="route('inbox')" :current="request()->routeIs('inbox')"
+                    wire:navigate>
+                    {{ __('Inbox') }}
+                </flux:navbar.item>
+            @endif
 
         </flux:navbar>
 

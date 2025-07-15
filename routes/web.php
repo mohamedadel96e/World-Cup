@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\StockpileController;
+use App\Http\Controllers\SupplyRequestController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\WeaponController;
 use App\Http\Middleware\EnsureUserHasRole;
@@ -40,7 +41,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])
     ->name('weapons.csv.download');
 
-
+    Volt::route('mail/request-csv', 'mail.request-csv')->name('mail.request-csv')
+    ->middleware(EnsureUserHasRole::class . ':general');
 
     Route::get('stockpile', [StockpileController::class, 'index'])
         ->name('stockpile.index')
@@ -92,15 +94,21 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+Route::middleware(['auth', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
+    // Route for the CSV upload form, pointing to the Volt component
+    Volt::route('/request', 'supply.request-form')->name('request.index');
+
+    // Route for the transaction receipt page
+    Route::get('/receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
+});
 
 
 
 
 
 Route::middleware('auth', 'verified')->group(function () {
-    Route::get('inbox', function () {
-        return "Hello World";
-    })->name('inbox');
+    Volt::route('inbox', 'inbox')->name('inbox')
+    ->middleware(EnsureUserHasRole::class . ':country,admin');
 });
 
 require __DIR__ . '/auth.php';

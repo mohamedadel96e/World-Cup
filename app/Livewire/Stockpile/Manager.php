@@ -4,6 +4,7 @@ namespace App\Livewire\Stockpile;
 
 use App\Models\Weapon;
 use App\Services\CsvGeneration;
+use App\Services\CurrencyConversionService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -30,18 +31,34 @@ class Manager extends Component
         }, $fileName);
     }
 
-    public function render()
+    /**
+     * Render the component.
+     * We inject the CurrencyConversionService to calculate local prices.
+     */
+    public function render(CurrencyConversionService $currencyService)
     {
         $user = Auth::user();
-        $countryId = $user->country_id;
+        $userCountry = $user->country;
 
-        $weapons = Weapon::with('category')
-            ->where('country_id', $countryId)
+        $weaponsQuery = $userCountry
+            ->weapons()
+            ->with(['category', 'country']) // Eager load relationships
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
-            ->orderByDesc('created_at')
-            ->paginate(10); // 10 items per page for the table
+            ->orderByDesc('weapons.created_at');
+
+        $weapons = $weaponsQuery->paginate(10);
+
+        // Loop through the paginated items and add the converted price
+        $weapons->getCollection()->transform(function ($weapon) use ($currencyService, $userCountry) {
+            $weapon->display_price = $currencyService->convert(
+                amount: $weapon->base_price,
+                fromCurrency: $weapon->country->currency_code,
+                toCurrency: $userCountry->currency_code
+            );
+            return $weapon;
+        });
 
         return view('livewire.stockpile.manager', [
             'weapons' => $weapons,

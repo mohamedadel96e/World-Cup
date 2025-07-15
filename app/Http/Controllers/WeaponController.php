@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WeaponController extends Controller
 {
@@ -16,7 +17,7 @@ class WeaponController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Weapon $weapon)
+    public function show(Weapon $weapon, CurrencyConversionService $currencyService)
     {
         $user = Auth::user();
         $userCountry = $user->country;
@@ -28,6 +29,12 @@ class WeaponController extends Controller
             // In a real scenario, you would fetch this from a dedicated discount model.
             $discount = $weapon->discount_percentage ?? 0;
         }
+
+        $weapon->display_price = $currencyService->convert(
+            amount: $weapon->base_price,
+            fromCurrency: $weapon->country->currency_code,
+            toCurrency: $userCountry->currency_code
+        );
 
         return view('weapons.show', [
             'weapon' => $weapon,
@@ -87,7 +94,8 @@ class WeaponController extends Controller
         try {
             // Deduct the final, converted price from user balance
             $user->balance -= $finalPrice;
-            $user->save();
+            $weaponCountry = $weapon->country;
+            $weaponCountry->balance += $finalPrice;
 
             // Record the purchase in the pivot table
             $user->weapons()->attach($weapon->id, [
@@ -95,6 +103,20 @@ class WeaponController extends Controller
                 'price_paid' => $finalPrice, // Store the price that was actually paid
                 'currency' => $user->country->currency_code, // Store the currency for the record
             ]);
+
+            DB::transaction(function () use ($user, $weapon, $finalPrice) {
+                $weapon->country->weapons()->updateExistingPivot($weapon->id, [
+                    'quantity' => DB::raw('quantity - 1'), // Decrease the weapon quantity
+                ]);
+
+                $user->weapons()->updateExistingPivot($weapon->id, [
+                    'purchased_at' => now(),
+                    'price_paid' => $finalPrice, // Store the price that was actually paid
+                    'currency' => $user->country->currency_code, // Store the currency for the record
+                ]);
+                $user->decrement('balance', $finalPrice);
+                $weapon->country->increment('balance', $weapon->base_price);
+            });
 
 
         } catch (\Exception $e) {

@@ -23,9 +23,10 @@ class WeaponFactory extends Factory
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'category_id' => Category::inRandomOrder()->first()->id,
+            'manufacturer_price' => $this->faker->numberBetween(0, 10000),
             'base_price' => $this->faker->numberBetween(1000, 100000),
             'image_path' => "https://res.cloudinary.com/dnnyocc5s/image/upload/v1752005121/user-profiles/user_12.jpg",
-            'discount_percentage' => $this->faker->numberBetween(20, 50),
+            'discount_percentage' => $this->faker->numberBetween(0, 30),
             'is_available' => $this->faker->boolean(100),
             'is_featured' => $this->faker->boolean(chanceOfGettingTrue: 10),
         ];

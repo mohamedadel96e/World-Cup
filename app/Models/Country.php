@@ -25,4 +25,18 @@ class Country extends Model
     {
         return $this->belongsTo(Team::class, 'team_id', 'id');
     }
+
+
+    public function weapons()
+    {
+        return $this->belongsToMany(Weapon::class, 'country_weapon')
+            ->withTimestamps()
+            ->withPivot(['quantity']);
+    }
+
+
+    public function supplyRequests()
+    {
+        return $this->hasMany(SupplyRequest::class);
+    }
 }
