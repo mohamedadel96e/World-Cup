@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
 
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -95,7 +95,7 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-Route::middleware(['auth', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
+Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
     // Route for the CSV upload form, pointing to the Volt component
 
     // Route for the transaction receipt page
@@ -111,19 +111,12 @@ Route::middleware('auth', 'verified')->group(function () {
     ->middleware(EnsureUserHasRole::class . ':country,admin');
 });
 
-Route::get('/send-test-email', function () {
-    Mail::raw('This is a test email from Mailtrap SMTP!', function ($message) {
-        $message->to('mohamedadel96k@gmail.com')
-                ->subject('Test Email via Mailtrap SMTP');
-    });
-
-    return 'Email sent!';
-});
 
 
 Route::get('history', function () {
     return view('history');
 })->name('history');
+
 
 
 require __DIR__ . '/auth.php';

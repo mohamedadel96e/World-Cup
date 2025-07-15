@@ -36,7 +36,7 @@ class WeaponsCsvGenerated extends Mailable
                 'order' => $this->order,
             ])
             ->attach($this->csvPath, [
-                'as' => 'requested_weapons_by_category.csv',
+                'as' => 'requested_weapons.csv',
                 'mime' => 'text/csv',
             ]);
     }

@@ -151,7 +151,7 @@ class SupplyRequestService
             // Mark the overall request as completed
             $supplyRequest->update(['status' => 'completed']);
         });
-
+        
         // Send the confirmation email after the transaction is successful
         Mail::to($general->email)->send(new SupplyRequestResponseMail($supplyRequest));
 

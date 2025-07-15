@@ -12,6 +12,7 @@ class EventServiceProvider extends ServiceProvider
         Verified::class => [
             FlashLoginAfterVerification::class,
         ],
+
     ];
 
     /**
