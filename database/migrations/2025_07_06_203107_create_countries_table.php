@@ -23,6 +23,7 @@ return new class extends Migration {
             $table->string('logo')->nullable();
             $table->string('flag')->nullable();
             $table->string('currency_symbol', 5);
+            $table->integer('balance')->default(1000000);
             $table->timestamps();
         });
     }

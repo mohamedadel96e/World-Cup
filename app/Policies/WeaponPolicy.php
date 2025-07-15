@@ -63,13 +63,13 @@ class WeaponPolicy
 
     public function ban(User $user, Weapon $weapon): bool
     {
-        return $user->isAdmin() || ($user->isCountryUser() && $user->country()->is($weapon->country));
+        return $user->isAdmin();
     }
 
     //&& !$user->hasWeapon($weapon)
     public function purchase(User $user, Weapon $weapon): bool
     {
-        if ($weapon->isAvailableForPurchase() ) {
+        if ($weapon->isAvailableForPurchase()  && !$user->hasWeapon($weapon)) {
             if ($user->isAdmin()) return true;
             if ($user->isCountryUser()) return true;
             if ($user->isGeneralUser()) return ($user->country->is($weapon->country));
@@ -90,4 +90,5 @@ class WeaponPolicy
     {
         return false;
     }
+
 }

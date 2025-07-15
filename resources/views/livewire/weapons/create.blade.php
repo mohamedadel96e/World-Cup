@@ -161,7 +161,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="lg:col-span-2">
                     <div class="sticky top-24 space-y-4">
                         <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">Live Preview</h3>
-                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true"/>
+                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true" :userCountry="$this->country"/>
                     </div>
                 </div>
 
