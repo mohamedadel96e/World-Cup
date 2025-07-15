@@ -111,4 +111,10 @@ Route::middleware('auth', 'verified')->group(function () {
     ->middleware(EnsureUserHasRole::class . ':country,admin');
 });
 
+
+Route::get('/history', function () {
+    return view('history');
+})->name('history');
+
+
 require __DIR__ . '/auth.php';
