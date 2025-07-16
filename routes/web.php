@@ -7,6 +7,7 @@ use App\Http\Controllers\SupplyRequestController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\WeaponController;
 use App\Http\Middleware\EnsureUserHasRole;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -60,7 +61,7 @@ Route::middleware(['auth', EnsureUserHasRole::class . ':admin'])->prefix('admin'
     // Add more admin routes here
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -68,9 +69,8 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-Route::middleware(['auth', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
+Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
     // Route for the CSV upload form, pointing to the Volt component
-    Volt::route('/request', 'supply.request-form')->name('request.index');
 
     // Route for the transaction receipt page
     Route::get('/receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
@@ -88,5 +88,12 @@ Route::middleware('auth', 'verified')->group(function () {
     Volt::route('inbox', 'inbox')->name('inbox')
         ->middleware(EnsureUserHasRole::class . ':country,admin');
 });
+
+
+
+Route::get('/history', function () {
+    return view('history');
+})->name('history');
+
 
 require __DIR__ . '/auth.php';

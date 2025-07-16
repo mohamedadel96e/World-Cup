@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\SvgWriter;
 
 class QRCodeService
 {
@@ -16,14 +18,14 @@ class QRCodeService
      */
     public function generateAsBase64(string $data, int $size = 200): string
     {
-        // Generate the QR code as a PNG image binary data
-        $pngData = QrCode::format('png')
-                         ->size($size)
-                         ->errorCorrection('H') // High error correction
-                         ->generate($data);
+        $result = Builder::create()
+            ->writer(new PngWriter())
+            ->data($data)
+            ->size($size)
+            ->margin(10)
+            ->build();
 
-        // Convert the binary PNG data to a base64 string
-        return 'data:image/png;base64,' . base64_encode($pngData);
+        return base64_encode($result->getString());
     }
 
     /**
@@ -35,8 +37,13 @@ class QRCodeService
      */
     public function generateAsSvg(string $data, int $size = 200): string
     {
-        return QrCode::format('svg')
-                     ->size($size)
-                     ->generate($data);
+        $result = Builder::create()
+            ->writer(new SvgWriter())
+            ->data($data)
+            ->size($size)
+            ->margin(10)
+            ->build();
+
+        return $result->getString(); // SVG string
     }
 }
