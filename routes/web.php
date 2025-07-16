@@ -38,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('marketplace/{weapon}/edit', 'weapons.edit')->name('weapons.edit');
     Route::post('weapons', [WeaponController::class, 'store'])->name('weapons.store');
 
+
     // Inventory (restricted to general and country roles)
     Volt::route('inventory', 'inventory.index')
         ->middleware(EnsureUserHasRole::class . ':general,country')
@@ -58,6 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(EnsureUserHasRole::class . ':country,admin')
         ->name('inbox');
 
+
     // Settings
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -73,7 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
 
     // Category Routes
-    Route::resource('category', CategoryController::class)->except(['index', 'show']);
+    Route::resource('category', Admin\CategoryController::class)->except(['index', 'show']);
+
 
     // Country Routes
     Route::resource('country', CountryController::class)->except(['index', 'show']);
@@ -93,5 +96,6 @@ Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])
     ->group(function () {
         Route::get('receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
     });
+
 
 require __DIR__ . '/auth.php';

@@ -11,7 +11,8 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
+
+                    fontFamily: {   
                         sans: ['Roboto Condensed', 'sans-serif'],
                     },
                     colors: {
@@ -49,36 +50,37 @@
             margin: 0;
         }
 
+        
         .military-border {
             border: 1px solid rgba(220, 38, 38, 0.3);
         }
-
+        
         .grid-pattern {
-            background-image:
+            background-image: 
                 linear-gradient(rgba(220, 38, 38, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
         }
-
+        
         .fade-in {
             animation: fadeIn 1s ease-in-out;
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         .pulse {
             animation: pulse 2s infinite;
         }
-
+        
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.02); }
             100% { transform: scale(1); }
         }
-
+        
         .status-indicator {
             width: 10px;
             height: 10px;
@@ -86,17 +88,17 @@
             display: inline-block;
             margin-right: 8px;
         }
-
+        
         .status-active {
             background-color: #dc2626;
             box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
         }
-
+        
         .terminal-text {
             font-family: 'Courier New', monospace;
             color: #dc2626;
         }
-
+        
         .rank-badge {
             width: 50px;
             height: 50px;
@@ -139,7 +141,7 @@
 
             <div class="mt-4 mb-8">
                 <p class="text-gray-400 leading-relaxed max-w-md">
-                    Elite military forces dedicated to national security and global stability.
+                    Elite military forces dedicated to national security and global stability. 
                     Our strategic operations ensure peace through strength and readiness.
                 </p>
             </div>
@@ -168,12 +170,13 @@
 
             <!-- Call to Action -->
             <div class="mt-6 flex flex-wrap gap-4">
-                <a href="{{ route( 'marketplace') }}">
+                <a href="{{ route(name: 'register') }}">
                 <button class="bg-red-700 text-white px-8 py-3 rounded-sm font-bold tracking-wider hover:bg-red-800 transition-colors pulse">
                     <i class="fas fa-flag mr-2"></i>JOIN THE ARMY
                 </button>
                 </a>
-                <a href="{{ route('history') }}">
+
+                <a href="{{ route(name: 'history') }}">
                 <button class="border border-red-700 text-gray-300 px-8 py-3 rounded-sm font-medium hover:bg-gray-800 transition-colors">
                     HISTORICAL ARCHIVES
                 </button>
@@ -294,30 +297,30 @@
         // Update date and time
         function updateDateTime() {
             const now = new Date();
-            const date = now.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
+            const date = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
                 day: 'numeric',
                 weekday: 'short'
             });
-            const time = now.toLocaleTimeString('en-US', {
-                hour: '2-digit',
+            const time = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: true
+                hour12: true 
             });
             document.getElementById('datetime').textContent = `${date.toUpperCase()} | ${time}`;
         }
-
+        
         // Initialize and update every second
         updateDateTime();
         setInterval(updateDateTime, 1000);
-
+        
         // Add military-style terminal typing effect
         const terminalText = "DEFENSE SYSTEMS ACTIVE // ALL UNITS REPORT READY STATUS // THREAT LEVEL: NORMAL // STANDING BY FOR ORDERS...";
         let index = 0;
         const terminalOutput = document.getElementById('terminal-output');
-
+        
         function typeTerminalText() {
             if (index < terminalText.length) {
                 terminalOutput.textContent += terminalText.charAt(index);
@@ -327,16 +330,16 @@
                 // Blinking cursor effect
                 setInterval(() => {
                     const cursorVisible = terminalOutput.textContent.endsWith('_');
-                    terminalOutput.textContent = cursorVisible
-                        ? terminalOutput.textContent.slice(0, -1)
+                    terminalOutput.textContent = cursorVisible 
+                        ? terminalOutput.textContent.slice(0, -1) 
                         : terminalOutput.textContent + '_';
                 }, 500);
             }
         }
-
+        
         // Start typing after a delay
         setTimeout(typeTerminalText, 1000);
-
+        
         // Add animation delays
         document.querySelectorAll('.fade-in').forEach((el, index) => {
             el.style.animationDelay = `${index * 0.1}s`;

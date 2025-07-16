@@ -16,4 +16,13 @@ class Category extends Model
     {
         return $this->hasMany(Weapon::class);
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($category) {
+            $category->weapons()->each(function ($weapon) {
+                $weapon->delete();
+            });
+        });
+    }
 }

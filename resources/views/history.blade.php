@@ -153,7 +153,8 @@
 
     <header class="w-full text-lg  not-has-[nav]:hidden pt-4 pr-4">
         @if (Route::has('login'))
-            <nav class="flex items-center justify-end gap-4">
+
+            <nav class="flex items-center justify-end gap-4"> 
                 @auth
                     <a
                         href="{{ url('/marketplace') }}"
@@ -202,7 +203,8 @@
             <!-- Page Header -->
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold mt-6">
-                    <span class="text-gray-200">GERMAN WAR MACHINE</span>
+
+                    <span class="text-gray-200">GERMAN WAR MACHINE</span> 
                     <span class="text-red-600">1939-1945</span>
                 </h1>
                 <div class="mt-2 text-gray-500 text-sm">DOCUMENT CLASSIFICATION: TOP SECRET - EYES ONLY</div>
@@ -299,10 +301,11 @@
                 </div>
             </div>
 
+            
             <!-- New Content: Eastern Front Campaigns -->
             <div class="mb-12 fade-in">
                 <h2 class="text-2xl font-bold text-gray-200 mb-6 section-title">EASTERN FRONT CAMPAIGNS</h2>
-
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="battle-card bg-gray-900 p-6 rounded">
                         <h3 class="text-xl font-bold text-red-600 mb-3">OPERATION BARBAROSSA</h3>
@@ -364,10 +367,11 @@
                 </div>
             </div>
 
+            
             <!-- New Content: Military Technology -->
             <div class="mb-12 fade-in">
                 <h2 class="text-2xl font-bold text-gray-200 mb-6 section-title">MILITARY TECHNOLOGY</h2>
-
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-gray-900 p-6 rounded border border-gray-800">
                         <div class="tech-icon">
@@ -433,7 +437,6 @@
                 </div>
             </div>
 
-
             <!-- New Content: Project 2025 -->
             <div class="bg-gray-900 border border-red-700 p-6 rounded mb-12 fade-in">
                 <div class="flex items-start">
@@ -488,4 +491,5 @@
         <span>LAST UPDATE: 07/14/2025</span>
     </footer>
 </body>
+
 </html>
