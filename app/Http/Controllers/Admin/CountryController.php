@@ -3,83 +3,74 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCountryRequest;
+use App\Http\Requests\Admin\UpdateCountryRequest;
 use App\Models\Country;
-use Illuminate\Http\Request;
+use App\Models\Team;
+use App\Services\CloudinaryUploadService;
+use Illuminate\Support\Str;
 
 class CountryController extends Controller
 {
     public function index()
     {
-        $countries = Country::all();
+        $countries = Country::with('team')->latest()->paginate(10);
         return view('livewire.admin.countries.index', compact('countries'));
     }
 
     public function create()
     {
-        return view('livewire.admin.countries.create');
+        return view('livewire.admin.countries.create', [
+            'teams' => Team::all(),
+        ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreCountryRequest $request, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:10|unique:countries,code',
-            'team_id' => 'required|exists:teams,id',
-            'currency_name' => 'required|string',
-            'currency_code' => 'required|string|max:3',
-            'currency_symbol' => 'required|string|max:5',
-            'balance' => 'required|integer',
-            'logo' => 'nullable|image',
-            'flag' => 'nullable|image',
-        ]);
+        $validated = $request->validated();
+
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('countries', 'public');
+            $validated['logo'] = $cloudinary->upload($request->file('logo'), 'country_logos', Str::slug($validated['name']) . '-logo');
         }
         if ($request->hasFile('flag')) {
-            $validated['flag'] = $request->file('flag')->store('countries', 'public');
+            $validated['flag'] = $cloudinary->upload($request->file('flag'), 'country_flags', Str::slug($validated['name']) . '-flag');
         }
-        try {
-            Country::create($validated);
-            return redirect()->route('admin.countries.index')->with('success', 'Country created successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not create country: ' . $e->getMessage()]);
-        }
+
+        Country::create($validated);
+
+        return redirect()->route('admin.countries.index')->with('success', 'Country created successfully.');
     }
 
     public function edit(Country $country)
     {
-        return view('livewire.admin.countries.edit', compact('country'));
+        return view('livewire.admin.countries.edit', [
+            'country' => $country,
+            'teams' => Team::all(),
+        ]);
     }
 
-    public function update(Request $request, Country $country)
+    public function update(UpdateCountryRequest $request, Country $country, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:10|unique:countries,code,' . $country->id,
-            'team_id' => 'required|exists:teams,id',
-            'currency_name' => 'required|string',
-            'currency_code' => 'required|string|max:3',
-            'currency_symbol' => 'required|string|max:5',
-            'balance' => 'required|integer',
-            'logo' => 'nullable|image',
-            'flag' => 'nullable|image',
-        ]);
+        $validated = $request->validated();
+
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('countries', 'public');
+            $validated['logo'] = $cloudinary->upload($request->file('logo'), 'country_logos', Str::slug($validated['name']) . '-logo');
         }
         if ($request->hasFile('flag')) {
-            $validated['flag'] = $request->file('flag')->store('countries', 'public');
+            $validated['flag'] = $cloudinary->upload($request->file('flag'), 'country_flags', Str::slug($validated['name']) . '-flag');
         }
-        try {
-            $country->update($validated);
-            return redirect()->route('admin.countries.index')->with('success', 'Country updated successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not update country: ' . $e->getMessage()]);
-        }
+
+        $country->update($validated);
+
+        return redirect()->route('admin.countries.index')->with('success', 'Country updated successfully.');
     }
 
     public function destroy(Country $country)
     {
+        if ($country->users()->exists() || $country->weapons()->exists()) {
+            return redirect()->route('admin.countries.index')->with('error', 'Cannot delete country with associated users or weapons.');
+        }
+
         $country->delete();
         return redirect()->route('admin.countries.index')->with('success', 'Country deleted successfully.');
     }

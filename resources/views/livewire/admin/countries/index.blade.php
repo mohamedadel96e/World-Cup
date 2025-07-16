@@ -1,83 +1,74 @@
-<x-layouts.app>
-    <div class="py-8 px-4 sm:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Countries</h2>
-                <a href="{{ route('admin.countries.create') }}" class="btn btn-primary">Add Country</a>
+<x-layouts.app :title="__('Country Management')">
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            Global Command
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mb-6 flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">National Entities</h2>
+                <a href="{{ route('admin.countries.create') }}" class="inline-flex items-center gap-2 rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-orange-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" /></svg>
+                    Add Country
+                </a>
             </div>
+
             @if(session('success'))
-                <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+                <div class="mb-4 rounded-md bg-green-100 p-4 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-200">{{ session('success') }}</div>
             @endif
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow overflow-x-auto">
+             @if(session('error'))
+                <div class="mb-4 rounded-md bg-red-100 p-4 text-sm font-medium text-red-800 dark:bg-red-900 dark:text-red-200">{{ session('error') }}</div>
+            @endif
+
+            <div class="overflow-x-auto rounded-lg border border-zinc-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
                 <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                    <thead class="bg-zinc-50 dark:bg-zinc-900">
+                    <thead class="bg-zinc-50 dark:bg-zinc-900/50">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                ID</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Code</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Team</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Currency Name</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Currency Code</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Currency Symbol</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Balance</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Logo</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Flag</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Country</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Team</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Balance</th>
+                            <th class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                        @foreach($countries as $country)
-                            <tr
-                                class="hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors {{ $loop->even ? 'bg-zinc-50 dark:bg-zinc-900' : 'bg-white dark:bg-zinc-800' }}">
-                                <td class="px-4 py-3">{{ $country->id }}</td>
-                                <td class="px-4 py-3 font-medium">{{ $country->name }}</td>
-                                <td class="px-4 py-3">{{ $country->code }}</td>
-                                <td class="px-4 py-3">{{ $country->team->name ?? '-' }}</td>
-                                <td class="px-4 py-3">{{ $country->currency_name }}</td>
-                                <td class="px-4 py-3">{{ $country->currency_code }}</td>
-                                <td class="px-4 py-3">{{ $country->currency_symbol }}</td>
-                                <td class="px-4 py-3">{{ number_format($country->balance) }}</td>
-                                <td class="px-4 py-3">
-                                    @if($country->logo)
-                                        <img src="{{ asset('storage/' . $country->logo) }}" alt="Logo"
-                                            class="h-8 w-8 object-cover rounded" />
-                                    @else
-                                        <span class="text-zinc-400">-</span>
-                                    @endif
+                        @forelse($countries as $country)
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/50">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="h-10 w-10 flex-shrink-0">
+                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ $country->flag ?? 'https://placehold.co/100x100/2d3748/ffffff?text=FLAG' }}" alt="{{ $country->name }}">
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-zinc-900 dark:text-white">{{ $country->name }}</div>
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $country->code }}</div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td class="px-4 py-3">
-                                    @if($country->flag)
-                                        <img src="{{ asset('storage/' . $country->flag) }}" alt="Flag"
-                                            class="h-8 w-8 object-cover rounded" />
-                                    @else
-                                        <span class="text-zinc-400">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 flex gap-2">
-                                    <a href="{{ route('admin.countries.edit', $country) }}"
-                                        class="btn btn-sm btn-secondary">Edit</a>
-                                    <form action="{{ route('admin.countries.destroy', $country) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-300">{{ $country->team->name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600 dark:text-green-400">{{ $country->currency_symbol }}{{ number_format($country->balance, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex items-center justify-end gap-4">
+                                        <a href="{{ route('admin.countries.edit', $country) }}" class="font-semibold text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300">Edit</a>
+                                        <form action="{{ route('admin.countries.destroy', $country) }}" method="POST" onsubmit="return confirm('Are you sure? This action cannot be undone.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="font-semibold text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300">Delete</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center text-zinc-500">No countries found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+             <div class="mt-6">
+                {{ $countries->links('vendor.pagination.custom') }}
             </div>
         </div>
     </div>

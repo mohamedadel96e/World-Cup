@@ -65,6 +65,7 @@ new #[Layout('components.layouts.app')] class extends Component {
         ]);
 
         session()->flash('status', 'Weapon successfully added to your arsenal!');
+        // No additional redirect needed here
         $this->redirect(route('marketplace'), navigate: true);
     }
 

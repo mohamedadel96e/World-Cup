@@ -2,13 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    CategoryController,
-    CountryController,
     StockpileController,
     SupplyRequestController,
-    TeamController,
     WeaponController
 };
+
+use App\Http\Controllers\Admin;
+
 use App\Http\Middleware\EnsureUserHasRole;
 use Livewire\Volt\Volt;
 
@@ -72,17 +72,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
 | Admin Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
+Route::middleware(['auth', EnsureUserHasRole::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+
+    // User Management
+    Route::resource('users', Admin\UserController::class);
+
+    // Weapon Management
+    Route::resource('weapons', Admin\WeaponController::class)->except(['create', 'edit']);
 
     // Category Routes
-    Route::resource('category', Admin\CategoryController::class)->except(['index', 'show']);
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 
 
     // Country Routes
-    Route::resource('country', CountryController::class)->except(['index', 'show']);
+    Route::resource('countries', \App\Http\Controllers\Admin\CountryController::class);
 
     // Team Routes
-    Route::resource('teams', TeamController::class)->except(['index', 'show']);
+    Route::resource('teams', Admin\TeamController::class);
 });
 
 /*
