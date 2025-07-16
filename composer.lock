@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9517292379fbcf16ef03c63125e34ea3",
+    "content-hash": "fc4ce281a46465913a91d9992a2dffc0",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -2236,16 +2236,16 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v2.2.1",
+            "version": "v2.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
-                "reference": "3621bf6faaa73b560ce17d4e52c65f2303493a12"
+                "reference": "0fb4c0b78eac393ad3a19a387af193573c310371"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/flux/zipball/3621bf6faaa73b560ce17d4e52c65f2303493a12",
-                "reference": "3621bf6faaa73b560ce17d4e52c65f2303493a12",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/0fb4c0b78eac393ad3a19a387af193573c310371",
+                "reference": "0fb4c0b78eac393ad3a19a387af193573c310371",
                 "shasum": ""
             },
             "require": {
@@ -2293,9 +2293,9 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v2.2.1"
+                "source": "https://github.com/livewire/flux/tree/v2.2.3"
             },
-            "time": "2025-06-18T02:02:40+00:00"
+            "time": "2025-07-11T00:25:51+00:00"
         },
         {
             "name": "livewire/livewire",
