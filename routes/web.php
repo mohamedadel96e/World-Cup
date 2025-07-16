@@ -1,122 +1,97 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CountryController;
-use App\Http\Controllers\StockpileController;
-use App\Http\Controllers\SupplyRequestController;
-use App\Http\Controllers\TeamController;
-use App\Http\Controllers\WeaponController;
-use App\Http\Middleware\EnsureUserHasRole;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{
+    CategoryController,
+    CountryController,
+    StockpileController,
+    SupplyRequestController,
+    TeamController,
+    WeaponController
+};
+use App\Http\Middleware\EnsureUserHasRole;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn () => view('welcome'))->name('home');
+Route::get('history', fn () => view('history'))->name('history');
 
-
-
-Volt::route('marketplace', 'marketplace.index')
-    ->middleware(['auth', 'verified'])
-    ->name('marketplace');
-
-Route::post('weapons/purchase', [WeaponController::class, 'purchase'])
-    ->name('weapons.purchase');
-
-
-// Route::get('marketplace/category/{category}', [MarketplaceController::class, 'showByCategory'])
-//     ->middleware(['auth', 'verified'])
-//     ->name('marketplace.category');
-
-
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Marketplace
+    Volt::route('marketplace', 'marketplace.index')->name('marketplace');
+    Route::get('marketplace/{weapon}', [WeaponController::class, 'show'])->name('marketplace.show');
+    Route::post('weapons/purchase', [WeaponController::class, 'purchase'])->name('weapons.purchase');
+    Route::delete('weapons/{weapon}', [WeaponController::class, 'destroy'])->name('marketplace.destroy');
+
+    // Weapon Management
     Volt::route('weapons/create', 'weapons.create')->name('weapons.create');
     Volt::route('marketplace/{weapon}/edit', 'weapons.edit')->name('weapons.edit');
-    Route::get('marketplace/{weapon}', [WeaponController::class, 'show'])
-        ->name('marketplace.show');
-    Route::post('weapons', [WeaponController::class, 'store'])
-        ->name('weapons.store');
-    Route::delete('weapons/{weapon}', [WeaponController::class, 'destroy'])
-        ->name('marketplace.destroy');
-    Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])
-    ->name('weapons.csv.download');
+    Route::post('weapons', [WeaponController::class, 'store'])->name('weapons.store');
 
-    Volt::route('mail/request-csv', 'mail.request-csv')->name('mail.request-csv')
-    ->middleware(EnsureUserHasRole::class . ':general');
+    // Inventory (restricted to general and country roles)
+    Volt::route('inventory', 'inventory.index')
+        ->middleware(EnsureUserHasRole::class . ':general,country')
+        ->name('inventory.index');
 
+    // Mail Request CSV (only general)
+    Volt::route('mail/request-csv', 'mail.request-csv')
+        ->middleware(EnsureUserHasRole::class . ':general')
+        ->name('mail.request-csv');
+
+    // Stockpile (admin and country)
     Route::get('stockpile', [StockpileController::class, 'index'])
-        ->name('stockpile.index')
-        ->middleware([EnsureUserHasRole::class . ':admin,country']);
-});
+        ->middleware(EnsureUserHasRole::class . ':admin,country')
+        ->name('stockpile.index');
 
+    // Inbox (admin and country)
+    Volt::route('inbox', 'inbox')
+        ->middleware(EnsureUserHasRole::class . ':country,admin')
+        ->name('inbox');
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
-    Route::get('category/create', [CategoryController::class, 'create'])
-        ->name('category.create');
-    Route::post('category', [CategoryController::class, 'store'])
-        ->name('category.store');
-    Route::get('category/{category}/edit', [CategoryController::class, 'edit'])
-        ->name('category.edit');
-    Route::put('category/{category}', [CategoryController::class, 'update'])
-        ->name('category.update');
-    Route::delete('category/{category}', [CategoryController::class, 'destroy'])
-        ->name('category.destroy');
-
-    Route::get('country/create', [CountryController::class, 'create'])
-        ->name('country.create');
-    Route::post('country', [CountryController::class, 'store'])
-        ->name('country.store');
-    Route::get('country/{country}/edit', [CountryController::class, 'edit'])
-        ->name('country.edit');
-    Route::put('country/{country}', [CountryController::class, 'update'])
-        ->name('country.update');
-    Route::delete('country/{country}', [CountryController::class, 'destroy'])
-        ->name('country.destroy');
-
-    Route::get('teams/create', [TeamController::class, 'create'])
-        ->name('team.create');
-    Route::post('teams', [TeamController::class, 'store'])
-        ->name('team.store');
-    Route::get('teams/{team}/edit', [TeamController::class, 'edit'])
-        ->name('team.edit');
-    Route::put('teams/{team}', [TeamController::class, 'update'])
-        ->name('team.update');
-    Route::delete('teams/{team}', [TeamController::class, 'destroy'])
-        ->name('team.destroy');
-
-});
-
-Route::middleware(['auth', 'verified'])->group(function () {
+    // Settings
     Route::redirect('settings', 'settings/profile');
-
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
-Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])->prefix('supply')->name('supply.')->group(function () {
-    // Route for the CSV upload form, pointing to the Volt component
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
 
-    // Route for the transaction receipt page
-    Route::get('/receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
+    // Category Routes
+    Route::resource('category', CategoryController::class)->except(['index', 'show']);
+
+    // Country Routes
+    Route::resource('country', CountryController::class)->except(['index', 'show']);
+
+    // Team Routes
+    Route::resource('teams', TeamController::class)->except(['index', 'show']);
 });
 
-
-
-
-
-Route::middleware('auth', 'verified')->group(function () {
-    Volt::route('inbox', 'inbox')->name('inbox')
-    ->middleware(EnsureUserHasRole::class . ':country,admin');
-});
-
-
-
-Route::get('history', function () {
-    return view('history');
-})->name('history');
-
-
+/*
+|--------------------------------------------------------------------------
+| Supply Routes (General Only)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])
+    ->prefix('supply')
+    ->name('supply.')
+    ->group(function () {
+        Route::get('receipt/{supplyRequest}', [SupplyRequestController::class, 'show'])->name('receipt.show');
+    });
 
 require __DIR__ . '/auth.php';

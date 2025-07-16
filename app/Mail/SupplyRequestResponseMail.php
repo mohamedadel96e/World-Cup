@@ -5,6 +5,7 @@ namespace App\Mail;
 use App\Models\SupplyRequest;
 use Illuminate\Bus\Queueable;
 use App\Services\QRCodeService;
+use Illuminate\Mail\Attachment as MailAttachment;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
@@ -56,7 +57,7 @@ class SupplyRequestResponseMail extends Mailable
         $qrCodeService = app(QRCodeService::class);
         $url = route('supply.receipt.show', $this->supplyRequest);
         $qrCodePngData = $qrCodeService->generateAsBase64($url); // Assuming a method that returns raw PNG data
-
+        $qrCodePngData = base64_decode($qrCodePngData);
         // 2. Create the attachment from the raw data
         return [
             Attachment::fromData(fn () => $qrCodePngData, 'qrcode.png')

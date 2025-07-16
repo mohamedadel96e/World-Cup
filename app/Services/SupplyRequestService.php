@@ -98,7 +98,7 @@ class SupplyRequestService
         $general = $supplyRequest->user;
         $country = $general->country;
 
-        DB::transaction(function () use ($supplyRequest, $country) {
+        DB::transaction(function () use ($supplyRequest, $country, $general) {
             // Loop through the items stored in the database for this request
             foreach ($supplyRequest->items as $item) {
                 $weapon = $item->weapon; // The related weapon model is already loaded
@@ -106,6 +106,7 @@ class SupplyRequestService
 
                 $status = 'Unavailable';
                 $notes = 'Weapon blueprint not found in central command.';
+                $pricePaid = 0;
                 if ($weapon) {
                     $stock = $country->weapons()->where('weapon_id', $weapon->id)->first();
                     $stockQuantity = $stock ? $stock->pivot->quantity : 0;
@@ -127,6 +128,8 @@ class SupplyRequestService
                             $status = 'Purchase Required';
                             $notes = "{$stockQuantity} provided from stock. {$needed} units acquired at a cost of " . number_format($totalCostInCountryCurrency, 2) . " {$country->currency_code}.";
 
+                            $pricePaid = $totalCostInCountryCurrency;
+
                             // Update balances
                             $country->decrement('balance', $totalCostInCountryCurrency);
                             $weapon->country()->increment('balance', $totalCost); // Increment the manufacturer's balance
@@ -140,6 +143,28 @@ class SupplyRequestService
                             $notes = "Insufficient funds to acquire the remaining {$needed} units.";
                         }
                     }
+
+                    //* If the request was fulfilled (either from stock or by purchase), update the General's inventory.
+                    if ($status === 'Provided' || $status === 'Purchase Required') {
+                        $existingUserWeapon = $general->weapons()->where('weapon_id', $weapon->id)->first();
+
+                        if ($existingUserWeapon) {
+                            // If the general already has this weapon, increment the quantity
+                            $general->weapons()->updateExistingPivot($weapon->id, [
+                                'quantity' => DB::raw("quantity + $quantityRequested"),
+                                'note' => $notes // Update the note with the latest transaction info
+                            ]);
+                        } else {
+                            // If it's a new weapon for this general, attach it
+                            $general->weapons()->attach($weapon->id, [
+                                'quantity' => $quantityRequested,
+                                'note' => $notes,
+                                'purchased_at' => now(),
+                                'price_paid' => $pricePaid,
+                                'currency' => $country->currency_code,
+                            ]);
+                        }
+                    }
                 }
 
                 // Update the status and notes for the specific item in the database
@@ -151,7 +176,7 @@ class SupplyRequestService
             // Mark the overall request as completed
             $supplyRequest->update(['status' => 'completed']);
         });
-        
+
         // Send the confirmation email after the transaction is successful
         Mail::to($general->email)->send(new SupplyRequestResponseMail($supplyRequest));
 

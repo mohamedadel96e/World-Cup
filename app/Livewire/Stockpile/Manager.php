@@ -23,7 +23,7 @@ class Manager extends Component
     public function exportCsv(CsvGeneration $csvService)
     {
         $user = Auth::user();
-        $csvData = $csvService->generateCsv($user);
+        $csvData = $csvService->generateCsvForStockpile($user);
         $fileName = 'stockpile_report_' . now()->format('Y-m-d') . '.csv';
 
         return response()->streamDownload(function () use ($csvData) {

@@ -127,16 +127,5 @@ class WeaponController extends Controller
     }
 
 
-    public function downloadWeaponsCsv(CsvGeneration $csvGeneration)
-    {
-        $user = Auth::user();
-        $csv = $csvGeneration->generateCsv($user);
-        $filename = 'weapons_by_type.csv';
-        return response()->streamDownload(function () use ($csv) {
-            echo $csv;
-        }, $filename, [
-            'Content-Type' => 'text/csv',
-            'Cache-Control' => 'no-store, no-cache',
-        ]);
-    }
+    
 }

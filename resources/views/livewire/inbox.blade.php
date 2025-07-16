@@ -32,7 +32,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             $order->save();
             $user = $order->user;
             // You might want a different email for rejections
-            // Mail::to($user->email)->queue(new OrderStatusChanged($order, $user, $status));
+            Mail::to($user->email)->queue(new OrderStatusChanged($order, $user, $status));
         }
 
         $this->dispatch('$refresh');

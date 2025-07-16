@@ -94,7 +94,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Weapon::class, 'user_weapon')
             ->withTimestamps()
-            ->withPivot(columns: ['purchased_at', 'price_paid']);
+            ->withPivot(columns: ['quantity', 'note','purchased_at', 'price_paid']);
     }
 
     public function hasWeapon(Weapon $weapon): bool

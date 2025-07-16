@@ -41,7 +41,7 @@
 
     <p>For a permanent record of this transaction, please scan the QR code below or visit the link provided.</p>
 
-        <img src="cid:qrcode" alt="QR Code" width="200" height="200">
+        <img src="cid:qrcode.png" alt="QR Code" width="200" height="200">
 
     <p>
         <a href="{{ route('supply.receipt.show', $supplyRequest) }}">View Transaction Details Online</a>

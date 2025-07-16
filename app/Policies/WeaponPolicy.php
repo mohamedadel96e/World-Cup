@@ -69,7 +69,7 @@ class WeaponPolicy
     //&& !$user->hasWeapon($weapon)
     public function purchase(User $user, Weapon $weapon): bool
     {
-        if ($weapon->isAvailableForPurchase()  && !$user->hasWeapon($weapon)) {
+        if ($weapon->isAvailableForPurchase() /*  && !$user->hasWeapon($weapon) */) {
             if ($user->isAdmin()) return true;
             if ($user->isCountryUser()) return true;
             if ($user->isGeneralUser()) return ($user->country->is($weapon->country));
