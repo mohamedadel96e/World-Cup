@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCategoryRequest;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Services\CloudinaryUploadService;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::withCount('weapons')->latest()->paginate(10);
         return view('livewire.admin.categories.index', compact('categories'));
     }
 
@@ -19,19 +22,18 @@ class CategoryController extends Controller
         return view('livewire.admin.categories.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-            'icon' => 'nullable|string',
-        ]);
-        try {
-            Category::create($validated);
-            return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not create category: ' . $e->getMessage()]);
+        $validated = $request->validated();
+
+        if ($request->hasFile('icon')) {
+            $folder = 'category_icons';
+            $publicId = Str::slug($validated['name']);
+            $validated['icon'] = $cloudinary->upload($request->file('icon'), $folder, $publicId);
         }
+
+        Category::create($validated);
+        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully.');
     }
 
     public function edit(Category $category)
@@ -39,23 +41,27 @@ class CategoryController extends Controller
         return view('livewire.admin.categories.edit', compact('category'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string',
-            'icon' => 'nullable|string',
-        ]);
-        try {
-            $category->update($validated);
-            return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not update category: ' . $e->getMessage()]);
+        $validated = $request->validated();
+
+        if ($request->hasFile('icon')) {
+            $folder = 'category_icons';
+            $publicId = Str::slug($validated['name']);
+            $validated['icon'] = $cloudinary->upload($request->file('icon'), $folder, $publicId);
         }
+
+        $category->update($validated);
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 
     public function destroy(Category $category)
     {
+        // Prevent deletion if the category is assigned to any weapons
+        if ($category->weapons()->exists()) {
+            return redirect()->route('admin.categories.index')->with('error', 'Cannot delete a category that is currently in use.');
+        }
+
         $category->delete();
         return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
     }

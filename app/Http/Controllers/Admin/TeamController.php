@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreTeamRequest;
+use App\Http\Requests\Admin\UpdateTeamRequest;
 use App\Models\Team;
-use Illuminate\Http\Request;
+use App\Services\CloudinaryUploadService;
+use Illuminate\Support\Str;
 
 class TeamController extends Controller
 {
     public function index()
     {
-        $teams = Team::all();
+        $teams = Team::latest()->paginate(10);
         return view('livewire.admin.teams.index', compact('teams'));
     }
 
@@ -19,22 +22,19 @@ class TeamController extends Controller
         return view('livewire.admin.teams.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreTeamRequest $request, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:teams,name',
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image',
-        ]);
+        $validated = $request->validated();
+
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('teams', 'public');
+            $folder = 'team_logos';
+            $publicId = Str::slug($validated['name']);
+            $validated['logo'] = $cloudinary->upload($request->file('logo'), $folder, $publicId);
         }
-        try {
-            Team::create($validated);
-            return redirect()->route('admin.teams.index')->with('success', 'Team created successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not create team: ' . $e->getMessage()]);
-        }
+
+        Team::create($validated);
+
+        return redirect()->route('admin.teams.index')->with('success', 'Team created successfully.');
     }
 
     public function edit(Team $team)
@@ -42,26 +42,28 @@ class TeamController extends Controller
         return view('livewire.admin.teams.edit', compact('team'));
     }
 
-    public function update(Request $request, Team $team)
+    public function update(UpdateTeamRequest $request, Team $team, CloudinaryUploadService $cloudinary)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:teams,name,' . $team->id,
-            'description' => 'nullable|string',
-            'logo' => 'nullable|image',
-        ]);
+        $validated = $request->validated();
+
         if ($request->hasFile('logo')) {
-            $validated['logo'] = $request->file('logo')->store('teams', 'public');
+            $folder = 'team_logos';
+            $publicId = Str::slug($validated['name']);
+            $validated['logo'] = $cloudinary->upload($request->file('logo'), $folder, $publicId);
         }
-        try {
-            $team->update($validated);
-            return redirect()->route('admin.teams.index')->with('success', 'Team updated successfully.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['error' => 'Could not update team: ' . $e->getMessage()]);
-        }
+
+        $team->update($validated);
+
+        return redirect()->route('admin.teams.index')->with('success', 'Team updated successfully.');
     }
 
     public function destroy(Team $team)
     {
+        // Add logic here to prevent deletion if teams are in use by countries
+        if ($team->countries()->exists()) {
+            return redirect()->route('admin.teams.index')->with('error', 'Cannot delete a team that has countries assigned to it.');
+        }
+
         $team->delete();
         return redirect()->route('admin.teams.index')->with('success', 'Team deleted successfully.');
     }

@@ -1,36 +1,34 @@
-<x-layouts.app>
-    <div class="py-8 px-4 sm:px-8">
-        <div class="max-w-lg mx-auto">
-            <div class="bg-white dark:bg-zinc-800 p-8 rounded-xl shadow">
-                <h2 class="text-2xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">Edit Team</h2>
-                <form action="{{ route('admin.teams.update', $team) }}" method="POST" enctype="multipart/form-data"
-                    class="space-y-5">
+<x-layouts.app :title="__('Edit Team')">
+    <div class="py-12">
+        <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-zinc-800 p-8 rounded-xl shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">Edit Team: {{ $team->name }}</h2>
+                <form action="{{ route('admin.teams.update', $team) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PUT')
                     <div>
-                        <label class="block mb-1 font-medium" for="name">Name</label>
-                        <input type="text" name="name" id="name" class="input w-full"
-                            value="{{ old('name', $team->name) }}" required autocomplete="off">
+                        <label for="name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Team Name</label>
+                        <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" value="{{ old('name', $team->name) }}" required>
                         @error('name') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label class="block mb-1 font-medium" for="description">Description</label>
-                        <textarea name="description" id="description" class="input w-full"
-                            rows="3">{{ old('description', $team->description) }}</textarea>
+                        <label for="description" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Description</label>
+                        <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500">{{ old('description', $team->description) }}</textarea>
                         @error('description') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
-                        <label class="block mb-1 font-medium" for="logo">Logo</label>
+                        <label for="logo" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">New Logo <span class="text-xs text-zinc-500">(leave blank to keep current)</span></label>
                         @if($team->logo)
-                            <img src="{{ asset('storage/' . $team->logo) }}" alt="Logo"
-                                class="h-12 w-12 object-cover rounded mb-2" />
+                            <div class="mt-2 mb-4">
+                                <img src="{{ $team->logo }}" alt="Current Logo" class="h-16 w-16 object-contain rounded-lg bg-zinc-100 dark:bg-zinc-700 p-1">
+                            </div>
                         @endif
-                        <input type="file" name="logo" id="logo" class="input w-full">
+                        <input type="file" name="logo" id="logo" class="mt-1 block w-full text-sm text-zinc-500 file:mr-4 file:rounded-md file:border-0 file:bg-zinc-200 file:px-4 file:py-2 dark:file:bg-zinc-700 dark:file:text-zinc-300">
                         @error('logo') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                     </div>
-                    <div class="flex justify-end gap-2 pt-2">
-                        <a href="{{ route('admin.teams.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Update Team</button>
+                    <div class="flex justify-end gap-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                        <a href="{{ route('admin.teams.index') }}" class="rounded-md bg-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-800 shadow-sm hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600">Cancel</a>
+                        <button type="submit" class="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500">Update Team</button>
                     </div>
                 </form>
             </div>
