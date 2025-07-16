@@ -21,6 +21,9 @@
                 {{ __('Marketplace') }}
             </flux:navbar.item>
 
+            <flux:navbar.item icon="shield-check" :href="route('inventory.index')" :current="request()->routeIs('inventory.index')" wire:navigate>
+                {{ __('Inventory') }}
+            </flux:navbar.item>
 
             @can('create', App\Models\Weapon::class)
                 <flux:navbar.item icon="shield-check" :href="route('stockpile.index')"
@@ -55,16 +58,24 @@
                     :label="__('Settings')" />
             </flux:tooltip> -->
             @if(auth()->user()->role == 'general')
-                <flux:navbar.item icon="chevrons-up-down" :href="route('mail.request-csv')"
-                    :current="request()->routeIs('mail.request-csv')" wire:navigate>
-                    {{ __('Generate CSV') }}
-                </flux:navbar.item>
+            <flux:navbar.item icon="chevrons-up-down" :href="route('mail.request-csv')"
+                :current="request()->routeIs('mail.request-csv')" wire:navigate>
+                {{ __('Make a Request') }}
+            </flux:navbar.item>
             @endif
+
             @if(auth()->user()->role == 'country')
-                <flux:navbar.item icon="inbox" badge="1" :href="route('inbox')" :current="request()->routeIs('inbox')"
-                    wire:navigate>
-                    {{ __('Inbox') }}
-                </flux:navbar.item>
+            @php
+            $inboxCount = App\Models\SupplyRequest::where('status', 'pending')
+            ->whereHas('user', function ($query) {
+            $query->where('country_id', Auth::user()->country_id);
+            })
+            ->count();
+            @endphp
+            <flux:navbar.item icon="inbox" badge="{{ $inboxCount }}" :href="route('inbox')" :current="request()->routeIs('inbox')"
+                wire:navigate>
+                {{ __('Inbox') }}
+            </flux:navbar.item>
             @endif
 
         </flux:navbar>

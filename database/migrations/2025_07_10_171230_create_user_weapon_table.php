@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('weapon_id')->constrained()->onDelete('cascade');
+            $table->integer('quantity')->default(1);
+            $table->string('note')->nullable();
             $table->timestamp('purchased_at')->nullable();
             $table->decimal('price_paid', 10, 2)->nullable();
             $table->string('currency', 3)->default('USD'); // Assuming USD as default currency
