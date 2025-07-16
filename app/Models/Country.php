@@ -39,4 +39,13 @@ class Country extends Model
     {
         return $this->hasMany(SupplyRequest::class);
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($country) {
+            $country->users()->each(function ($user) {
+                $user->delete();
+            });
+        });
+    }
 }

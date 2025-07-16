@@ -16,4 +16,13 @@ class Team extends Model
     {
         return $this->hasMany(Country::class, 'team_id', 'id');
     }
+
+    protected static function booted()
+    {
+        static::deleting(function ($team) {
+            $team->countries()->each(function ($country) {
+                $country->delete();
+            });
+        });
+    }
 }

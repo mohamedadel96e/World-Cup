@@ -40,10 +40,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('weapons/{weapon}', [WeaponController::class, 'destroy'])
         ->name('marketplace.destroy');
     Route::get('weapons/csv/download', [WeaponController::class, 'downloadWeaponsCsv'])
-    ->name('weapons.csv.download');
+        ->name('weapons.csv.download');
 
     Volt::route('mail/request-csv', 'mail.request-csv')->name('mail.request-csv')
-    ->middleware(EnsureUserHasRole::class . ':general');
+        ->middleware(EnsureUserHasRole::class . ':general');
 
     Route::get('stockpile', [StockpileController::class, 'index'])
         ->name('stockpile.index')
@@ -51,40 +51,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->group(function () {
-    Route::get('category/create', [CategoryController::class, 'create'])
-        ->name('category.create');
-    Route::post('category', [CategoryController::class, 'store'])
-        ->name('category.store');
-    Route::get('category/{category}/edit', [CategoryController::class, 'edit'])
-        ->name('category.edit');
-    Route::put('category/{category}', [CategoryController::class, 'update'])
-        ->name('category.update');
-    Route::delete('category/{category}', [CategoryController::class, 'destroy'])
-        ->name('category.destroy');
-
-    Route::get('country/create', [CountryController::class, 'create'])
-        ->name('country.create');
-    Route::post('country', [CountryController::class, 'store'])
-        ->name('country.store');
-    Route::get('country/{country}/edit', [CountryController::class, 'edit'])
-        ->name('country.edit');
-    Route::put('country/{country}', [CountryController::class, 'update'])
-        ->name('country.update');
-    Route::delete('country/{country}', [CountryController::class, 'destroy'])
-        ->name('country.destroy');
-
-    Route::get('teams/create', [TeamController::class, 'create'])
-        ->name('team.create');
-    Route::post('teams', [TeamController::class, 'store'])
-        ->name('team.store');
-    Route::get('teams/{team}/edit', [TeamController::class, 'edit'])
-        ->name('team.edit');
-    Route::put('teams/{team}', [TeamController::class, 'update'])
-        ->name('team.update');
-    Route::delete('teams/{team}', [TeamController::class, 'destroy'])
-        ->name('team.destroy');
-
+Route::middleware(['auth', EnsureUserHasRole::class . ':admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::resource('weapons', \App\Http\Controllers\Admin\WeaponController::class);
+    Route::resource('countries', \App\Http\Controllers\Admin\CountryController::class);
+    Route::resource('teams', \App\Http\Controllers\Admin\TeamController::class);
+    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+    // Add more admin routes here
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -103,12 +77,16 @@ Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])->
 });
 
 
-
+Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':admin'])->group(function () {
+    // Remove these lines:
+    // \Livewire\Livewire::component('admin.insert', \App\Livewire\Admin\Insert::class);
+    // Route::get('admin/insert', fn() => view('livewire.admin.insert'))->name('admin.insert');
+});
 
 
 Route::middleware('auth', 'verified')->group(function () {
     Volt::route('inbox', 'inbox')->name('inbox')
-    ->middleware(EnsureUserHasRole::class . ':country,admin');
+        ->middleware(EnsureUserHasRole::class . ':country,admin');
 });
 
 
