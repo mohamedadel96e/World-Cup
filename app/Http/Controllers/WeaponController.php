@@ -97,23 +97,33 @@ class WeaponController extends Controller
             $weaponCountry = $weapon->country;
             $weaponCountry->balance += $finalPrice;
 
-            // Record the purchase in the pivot table
-            $user->weapons()->attach($weapon->id, [
-                'purchased_at' => now(),
-                'price_paid' => $finalPrice, // Store the price that was actually paid
-                'currency' => $user->country->currency_code, // Store the currency for the record
-            ]);
+
 
             DB::transaction(function () use ($user, $weapon, $finalPrice) {
                 $weapon->country->weapons()->updateExistingPivot($weapon->id, [
                     'quantity' => DB::raw('quantity - 1'), // Decrease the weapon quantity
                 ]);
 
-                $user->weapons()->updateExistingPivot($weapon->id, [
-                    'purchased_at' => now(),
-                    'price_paid' => $finalPrice, // Store the price that was actually paid
-                    'currency' => $user->country->currency_code, // Store the currency for the record
-                ]);
+                $existing = $user->weapons()->where('weapon_id', $weapon->id)->exists();
+
+                if ($existing) {
+                    $user->weapons()->updateExistingPivot($weapon->id, [
+                        'purchased_at' => now(),
+                        'price_paid' => $finalPrice,
+                        'quantity' => DB::raw('quantity + 1'),
+                        'note' => 'You purchased one from marketplace',
+                        'currency' => $user->country->currency_code,
+                    ]);
+                } else {
+                    $user->weapons()->attach($weapon->id, [
+                        'purchased_at' => now(),
+                        'price_paid' => $finalPrice,
+                        'quantity' => 1,
+                        'note' => 'You purchased one from marketplace',
+                        'currency' => $user->country->currency_code,
+                    ]);
+                }
+
                 $user->decrement('balance', $finalPrice);
                 $weapon->country->increment('balance', $weapon->base_price);
             });
