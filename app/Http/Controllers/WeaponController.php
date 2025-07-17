@@ -105,6 +105,7 @@ class WeaponController extends Controller
                     'quantity' => DB::raw('quantity - 1'), // Decrease the weapon quantity
                 ]);
 
+
                 $existing = $user->weapons()->where('weapon_id', $weapon->id)->exists();
 
                 if ($existing) {
@@ -124,6 +125,7 @@ class WeaponController extends Controller
                         'currency' => $user->country->currency_code,
                     ]);
                 }
+
 
                 $user->decrement('balance', $finalPrice);
                 $weapon->country->increment('balance', $weapon->base_price);
@@ -187,5 +189,5 @@ class WeaponController extends Controller
     }
 
 
-    
+
 }
