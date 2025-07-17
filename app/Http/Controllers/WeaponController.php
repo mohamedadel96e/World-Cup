@@ -113,7 +113,7 @@ class WeaponController extends Controller
                         'purchased_at' => now(),
                         'price_paid' => $finalPrice,
                         'quantity' => DB::raw('quantity + 1'),
-                        'note' => 'You purchased one from marketplace',
+                        'note' => 'You purchased one from marketplace with price of ' . $finalPrice . ' ' . $user->country->currency_code,
                         'currency' => $user->country->currency_code,
                     ]);
                 } else {
@@ -121,7 +121,7 @@ class WeaponController extends Controller
                         'purchased_at' => now(),
                         'price_paid' => $finalPrice,
                         'quantity' => 1,
-                        'note' => 'You purchased one from marketplace',
+                        'note' => 'You purchased one from marketplace with price of ' . $finalPrice . ' ' . $user->country->currency_code,
                         'currency' => $user->country->currency_code,
                     ]);
                 }
@@ -141,7 +141,7 @@ class WeaponController extends Controller
 
     public function bomb(Request $request, Weapon $weapon): RedirectResponse
     {
-        
+
         $request->validate([
             'weapon_id' => 'required|integer|exists:weapons,id',
             'country_id' => 'required|integer|exists:countries,id',
@@ -162,13 +162,13 @@ class WeaponController extends Controller
 
         try {
             DB::transaction(function () use ($user, $weapon, $targetCountryId, $quantity) {
-                
+
                 // Decrease from user inventory
                 $user->weapons()->updateExistingPivot($weapon->id, [
                     'quantity' => DB::raw("quantity - $quantity")
                 ]);
 
-                
+
 
                 // Log the bombing
                 Bombing::create([
@@ -178,13 +178,13 @@ class WeaponController extends Controller
                     'quantity' => $quantity,
                 ]);
 
-                
+
             });
 
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Bombing failed. Please try again.']);
         }
-        
+
         return redirect()->route('inventory.index')->with('success', 'Bombing executed successfully!');
     }
 
