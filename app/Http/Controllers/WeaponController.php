@@ -97,12 +97,6 @@ class WeaponController extends Controller
             $weaponCountry = $weapon->country;
             $weaponCountry->balance += $finalPrice;
 
-            // Record the purchase in the pivot table
-            $user->weapons()->attach($weapon->id, [
-                'purchased_at' => now(),
-                'price_paid' => $finalPrice, // Store the price that was actually paid
-                'currency' => $user->country->currency_code, // Store the currency for the record
-            ]);
 
             DB::transaction(function () use ($user, $weapon, $finalPrice) {
                 $weapon->country->weapons()->updateExistingPivot($weapon->id, [
@@ -112,6 +106,8 @@ class WeaponController extends Controller
                 $user->weapons()->updateExistingPivot($weapon->id, [
                     'purchased_at' => now(),
                     'price_paid' => $finalPrice, // Store the price that was actually paid
+                    'quantity' => DB::raw('quantity + 1'), // Increase the user's weapon quantity
+                    'note' => 'You Purchased one from marketplace',
                     'currency' => $user->country->currency_code, // Store the currency for the record
                 ]);
                 $user->decrement('balance', $finalPrice);
@@ -127,5 +123,5 @@ class WeaponController extends Controller
     }
 
 
-    
+
 }
