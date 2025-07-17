@@ -6,6 +6,9 @@ use App\Services\CurrencyConversionService;
 use App\Services\QRCodeService;
 use Cloudinary\Cloudinary;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Bombing;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,6 +41,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('*', function ($view) {
+            $user = Auth::user();
+    
+            $unseenBombings = [];
+    
+            if ($user && $user->country_id) {
+                $unseenBombings = Bombing::where('target_country_id', $user->country_id)
+                    ->whereDoesntHave('views', function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    })
+                    ->latest()
+                    ->get();
+            }
+    
+            $view->with('unseenBombings', $unseenBombings);
+        });
     }
 }

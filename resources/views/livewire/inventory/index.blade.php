@@ -31,8 +31,12 @@ new #[Layout('components.layouts.app')] class extends Component {
             })
             ->orderByDesc('user_weapon.updated_at'); // Order by most recently acquired
 
+        
         return [
             'weapons' => $weaponsQuery->paginate(10),
+            'countries' => Country::where('id', '!=', $this->userCountry->id)
+                              ->orderBy('name')
+                              ->get(),
         ];
     }
 };
@@ -63,14 +67,15 @@ new #[Layout('components.layouts.app')] class extends Component {
                 </div>
 
                 <!-- Data Table -->
-                <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                    <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                <div class="min-w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+                    <table class="w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                         <thead class="bg-zinc-50 dark:bg-zinc-800">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Weapon</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Manufacturer</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Quantity</th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Last Acquisition Note</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-zinc-500 dark:text-zinc-300">Use It! 💥</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 bg-white dark:divide-zinc-700 dark:bg-zinc-900">
@@ -96,6 +101,61 @@ new #[Layout('components.layouts.app')] class extends Component {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-zinc-900 dark:text-white">{{ $weapon->pivot->quantity ?? "One Weapon" }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500 dark:text-zinc-400">
                                         {{ $weapon->pivot->note ?? "You purchased it with cost of " . ($weapon->pivot->price_paid ?? "Unknown") . " " . ($userCountry->currency_code ?? "") }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div x-data="{ open: false, quantity: {{ $weapon->pivot->quantity ?? 0 }} }" class="relative">
+                                            <!-- Send Button -->
+                                            <button
+                                                @click="if(quantity > 0) open = !open"
+                                                :disabled="quantity === 0"
+                                                :class="quantity === 0 
+                                                    ? 'px-6 py-4 bg-gray-500 cursor-not-allowed text-zinc-700' 
+                                                    : 'px-6 py-4 whitespace-nowrap text-sm border rounded-md text-zinc-200 transition-colors hover:bg-red-600 hover:text-black'"
+                                            >
+                                            BOMB
+                                            </button>
+
+                                            <!-- Form -->
+                                            <form
+                                                x-show="open"
+                                                x-transition
+                                                method="POST"
+                                                action="{{ route('weapons.bomb', $weapon->id) }}"
+                                                class="mt-4 p-4 border rounded-md bg-black shadow-md space-y-4 w-full max-w-sm"
+                                            >
+                                                @csrf
+                                                
+
+                                                <input type="hidden" name="weapon_id" value="{{ $weapon->id }}">
+                                                <!-- Quantity Input -->
+                                                <div>
+                                                    <label class="block text-sm font-medium text-zinc-200">Quantity</label>
+                                                    <input
+                                                        type="number"
+                                                        name="quantity"
+                                                        min="1"
+                                                        :max="quantity"
+                                                        required
+                                                        class="w-full border border-gray-300 rounded-md p-2"
+                                                    />
+                                                </div>
+
+                                                <!-- Recipient Input -->
+                                                <select name="country_id" class="border rounded p-2 w-full bg-black">
+                                                    <option value="" disabled selected>Select a country</option>
+                                                    @foreach ($countries as $country)
+                                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                                    @endforeach
+                                                </select>
+
+                                                <button
+                                                    type="submit"
+                                                    class="px-6 py-4 whitespace-nowrap text-sm border rounded-md text-zinc-200 transition-colors hover:bg-red-600 hover:text-black"
+                                                >
+                                                    Send Gift 🎁
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

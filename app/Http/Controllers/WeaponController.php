@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Weapon;
 use App\Services\CsvGeneration;
 use App\Services\CurrencyConversionService;
+use App\Models\Bombing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
@@ -98,18 +99,34 @@ class WeaponController extends Controller
             $weaponCountry->balance += $finalPrice;
 
 
+
             DB::transaction(function () use ($user, $weapon, $finalPrice) {
                 $weapon->country->weapons()->updateExistingPivot($weapon->id, [
                     'quantity' => DB::raw('quantity - 1'), // Decrease the weapon quantity
                 ]);
 
-                $user->weapons()->updateExistingPivot($weapon->id, [
-                    'purchased_at' => now(),
-                    'price_paid' => $finalPrice, // Store the price that was actually paid
-                    'quantity' => DB::raw('quantity + 1'), // Increase the user's weapon quantity
-                    'note' => 'You Purchased one from marketplace',
-                    'currency' => $user->country->currency_code, // Store the currency for the record
-                ]);
+
+                $existing = $user->weapons()->where('weapon_id', $weapon->id)->exists();
+
+                if ($existing) {
+                    $user->weapons()->updateExistingPivot($weapon->id, [
+                        'purchased_at' => now(),
+                        'price_paid' => $finalPrice,
+                        'quantity' => DB::raw('quantity + 1'),
+                        'note' => 'You purchased one from marketplace',
+                        'currency' => $user->country->currency_code,
+                    ]);
+                } else {
+                    $user->weapons()->attach($weapon->id, [
+                        'purchased_at' => now(),
+                        'price_paid' => $finalPrice,
+                        'quantity' => 1,
+                        'note' => 'You purchased one from marketplace',
+                        'currency' => $user->country->currency_code,
+                    ]);
+                }
+
+
                 $user->decrement('balance', $finalPrice);
                 $weapon->country->increment('balance', $weapon->base_price);
             });
@@ -120,6 +137,55 @@ class WeaponController extends Controller
         }
 
         return redirect()->route('marketplace')->with('success', 'Weapon purchased successfully!');
+    }
+
+    public function bomb(Request $request, Weapon $weapon): RedirectResponse
+    {
+        
+        $request->validate([
+            'weapon_id' => 'required|integer|exists:weapons,id',
+            'country_id' => 'required|integer|exists:countries,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $user = Auth::user();
+        $weapon = Weapon::findOrFail($request->weapon_id);
+        $targetCountryId = $request->country_id;
+        $quantity = $request->quantity;
+
+        // Check if user owns this weapon and has enough quantity
+        $pivotData = $user->weapons()->where('weapon_id', $weapon->id)->first()?->pivot;
+
+        if (!$pivotData || $pivotData->quantity < $quantity) {
+            return back()->withErrors(['error' => 'You do not have enough of this weapon.']);
+        }
+
+        try {
+            DB::transaction(function () use ($user, $weapon, $targetCountryId, $quantity) {
+                
+                // Decrease from user inventory
+                $user->weapons()->updateExistingPivot($weapon->id, [
+                    'quantity' => DB::raw("quantity - $quantity")
+                ]);
+
+                
+
+                // Log the bombing
+                Bombing::create([
+                    'attacker_country_id' => $user->country_id,
+                    'weapon_id' => $weapon->id,
+                    'target_country_id' => $targetCountryId,
+                    'quantity' => $quantity,
+                ]);
+
+                
+            });
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Bombing failed. Please try again.']);
+        }
+        
+        return redirect()->route('inventory.index')->with('success', 'Bombing executed successfully!');
     }
 
 
