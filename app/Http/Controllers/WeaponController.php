@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Weapon;
 use App\Services\CsvGeneration;
 use App\Services\CurrencyConversionService;
+use App\Models\Bombing;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
@@ -134,6 +135,55 @@ class WeaponController extends Controller
         }
 
         return redirect()->route('marketplace')->with('success', 'Weapon purchased successfully!');
+    }
+
+    public function bomb(Request $request, Weapon $weapon): RedirectResponse
+    {
+        
+        $request->validate([
+            'weapon_id' => 'required|integer|exists:weapons,id',
+            'country_id' => 'required|integer|exists:countries,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        $user = Auth::user();
+        $weapon = Weapon::findOrFail($request->weapon_id);
+        $targetCountryId = $request->country_id;
+        $quantity = $request->quantity;
+
+        // Check if user owns this weapon and has enough quantity
+        $pivotData = $user->weapons()->where('weapon_id', $weapon->id)->first()?->pivot;
+
+        if (!$pivotData || $pivotData->quantity < $quantity) {
+            return back()->withErrors(['error' => 'You do not have enough of this weapon.']);
+        }
+
+        try {
+            DB::transaction(function () use ($user, $weapon, $targetCountryId, $quantity) {
+                
+                // Decrease from user inventory
+                $user->weapons()->updateExistingPivot($weapon->id, [
+                    'quantity' => DB::raw("quantity - $quantity")
+                ]);
+
+                
+
+                // Log the bombing
+                Bombing::create([
+                    'attacker_country_id' => $user->country_id,
+                    'weapon_id' => $weapon->id,
+                    'target_country_id' => $targetCountryId,
+                    'quantity' => $quantity,
+                ]);
+
+                
+            });
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Bombing failed. Please try again.']);
+        }
+        
+        return redirect()->route('inventory.index')->with('success', 'Bombing executed successfully!');
     }
 
 

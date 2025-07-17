@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     StockpileController,
     SupplyRequestController,
-    WeaponController
+    WeaponController,
+    BombingController
 };
 
 use App\Http\Controllers\Admin;
@@ -37,7 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('weapons/create', 'weapons.create')->name('weapons.create');
     Volt::route('marketplace/{weapon}/edit', 'weapons.edit')->name('weapons.edit');
     Route::post('weapons', [WeaponController::class, 'store'])->name('weapons.store');
+    Route::post('weapons/{weapon}/bomb', [WeaponController::class, 'bomb'])
+        ->middleware(EnsureUserHasRole::class . ':general,country')
+        ->name('weapons.bomb');
 
+    // Bombings 
+    Route::post('/bombings/seen', [BombingController::class, 'markAsSeen'])
+        ->name('bombings.markAsSeen')
+        ->middleware('auth');
 
     // Inventory (restricted to general and country roles)
     Volt::route('inventory', 'inventory.index')

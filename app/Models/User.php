@@ -101,4 +101,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->weapons()->where('weapon_id', $weapon->id)->exists();
     }
+
+    public function bombingViews()
+    {
+        return $this->hasMany(BombingView::class);
+    }
 }
