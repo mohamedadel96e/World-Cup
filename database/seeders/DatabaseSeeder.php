@@ -30,8 +30,12 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(10)->create();
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Administrator',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+            'country_id' => 1, // Assuming 1 is the ID for Germany
         ]);
 
         $this->call([
