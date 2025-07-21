@@ -5,6 +5,7 @@
         ? $imageUrl
         : asset('images/appLogo.png');
 
+
 @endphp
 
-<img src="{{ $imageUrl }}" alt="App Logo" >
+<img src="{{ $imageUrl }}" alt="App Logo" class="rounded-lg">

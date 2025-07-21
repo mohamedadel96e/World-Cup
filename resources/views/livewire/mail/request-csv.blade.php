@@ -10,7 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 
-new #[Layout('components.layouts.app')] class extends Component {
+new #[Layout('components.layouts.app', ['title' => 'Request CSV'])] class extends Component {
     use WithFileUploads;
 
     public array $quantities = [];

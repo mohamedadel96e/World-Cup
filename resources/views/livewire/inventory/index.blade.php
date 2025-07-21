@@ -7,7 +7,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
-new #[Layout('components.layouts.app')] class extends Component {
+new #[Layout('components.layouts.app', ['title' => 'Inventory'])] class extends Component {
     use WithPagination;
 
     public string $search = '';
@@ -169,7 +169,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
                 <!-- Pagination -->
                 <div class="mt-6">
-                    {{ $weapons->links('vendor.pagination.custom') }}
+                    {{ $weapons->links() }}
                 </div>
             </div>
         </div>

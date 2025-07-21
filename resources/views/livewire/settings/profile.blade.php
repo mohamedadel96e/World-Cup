@@ -152,6 +152,7 @@ new class extends Component {
                     </flux:button>
                 </div>
             </form>
+            <div class="w-full flex flex-col ">
             <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6 ">
                 <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
@@ -187,9 +188,11 @@ new class extends Component {
                         {{ __('Saved.') }}
                     </x-action-message>
                 </div>
-                <livewire:settings.delete-user-form />
+
 
             </form>
+            <livewire:settings.delete-user-form />
+            </div>
         </div>
 
     </x-settings.layout>

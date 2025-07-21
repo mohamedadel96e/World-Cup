@@ -16,6 +16,12 @@
         </a>
 
         <flux:navbar class="-mb-px max-lg:hidden">
+            <!-- <flux:navbar.item icon="home" :href="route('home')" :current="request()->routeIs('home')" wire:navigate>
+                {{ __('Home') }}
+            </flux:navbar.item>
+            <flux:navbar.item icon="clock" :href="route('history')" :current="request()->routeIs('history')" wire:navigate>
+                {{ __('History') }}
+            </flux:navbar.item> -->
             <flux:navbar.item icon="layout-grid" :href="route('marketplace')"
                 :current="request()->routeIs('marketplace')" wire:navigate>
                 {{ __('Marketplace') }}

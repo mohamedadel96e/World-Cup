@@ -1,7 +1,7 @@
 <x-layouts.app.header :title="$title ?? null">
     <flux:main>
         @if(session('loggedIn'))
-            <audio id="country-audio" src="{{ asset('audio/country-' . auth()->user()->country_id . '.mp3') }}" autoplay hidden></audio>
+            <audio id="country-audio" src="{{ asset('audio/country-' . auth()->user()->country_id . '.mp3') }}" autoplay hidden volume="0.5"></audio>
         @endif
 
         {{-- Global Bombing Alert --}}

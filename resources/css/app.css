@@ -31,7 +31,7 @@
     --color-accent: var(--color-neutral-800);
     --color-accent-content: var(--color-neutral-800);
     --color-accent-foreground: var(--color-white);
-    --default-font-family: "Giorgia"
+    --default-font-family: "Roboto Condensed" , sans-serif
 }
 
 @layer theme {
