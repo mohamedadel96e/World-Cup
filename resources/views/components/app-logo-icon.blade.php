@@ -1,4 +1,7 @@
-@props(['imageUrl' => null])
+@props([
+    'imageUrl' => null,
+    'additionalClasses' => ''
+])
 
 @php
     $imageUrl = is_string($imageUrl) && !empty($imageUrl)
@@ -8,4 +11,4 @@
 
 @endphp
 
-<img src="{{ $imageUrl }}" alt="App Logo" class="rounded-lg">
+<img src="{{ $imageUrl }}" alt="App Logo" class="rounded-lg {{ $additionalClasses }}">
