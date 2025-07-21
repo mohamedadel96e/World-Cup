@@ -42,7 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware(EnsureUserHasRole::class . ':general,country')
         ->name('weapons.bomb');
 
-    // Bombings 
+    // Bombings
     Route::post('/bombings/seen', [BombingController::class, 'markAsSeen'])
         ->name('bombings.markAsSeen')
         ->middleware('auth');

@@ -9,28 +9,33 @@
                     <!-- Form fields here -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Name</label>
-                        <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" value="{{ old('name', $user->name) }}" required>
+                        <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm p-1.5 focus:border-orange-500 focus:ring-orange-500" value="{{ old('name', $user->name) }}" required>
                         @error('name') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Email</label>
-                        <input type="email" name="email" id="email" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" value="{{ old('email', $user->email) }}" required>
+                        <input type="email" name="email" id="email" class="mt-1 p-1.5 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" value="{{ old('email', $user->email) }}" required>
                         @error('email') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
+                    </div>
+                    <div>
+                        <label for="balance" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Balance in {{ $user->country->currency_code }}</label>
+                        <input type="number" name="balance" id="balance" step="0.01"  class="mt-1 p-1.5 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" value="{{ old('balance', $user->balance) }}" required>
+                        @error('balance') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password <span class="text-xs text-zinc-500">(leave blank to keep)</span></label>
-                            <input type="password" name="password" id="password" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+                            <input type="password" name="password" id="password" class="mt-1 p-1.5 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                             @error('password') <div class="text-red-500 text-sm mt-1">{{ $message }}</div> @enderror
                         </div>
                         <div>
                             <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Confirm Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500">
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 p-1.5 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                         </div>
                     </div>
                     <div>
                         <label for="role" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Role</label>
-                        <select name="role" id="role" x-model="role" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500" required>
+                        <select name="role" id="role" x-model="role" class="mt-1 block w-full rounded-md border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:border-orange-500 focus:ring-orange-500 p-1.5" required>
                             <option value="general" @if(old('role', $user->role) == 'general') selected @endif>General</option>
                             <option value="country" @if(old('role', $user->role) == 'country') selected @endif>Country</option>
                             <option value="admin" @if(old('role', $user->role) == 'admin') selected @endif>Admin</option>

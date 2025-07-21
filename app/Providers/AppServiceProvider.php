@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Bombing;
+use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,9 +44,9 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $user = Auth::user();
-    
+
             $unseenBombings = [];
-    
+
             if ($user && $user->country_id) {
                 $unseenBombings = Bombing::where('target_country_id', $user->country_id)
                     ->whereDoesntHave('views', function ($q) use ($user) {
@@ -54,8 +55,9 @@ class AppServiceProvider extends ServiceProvider
                     ->latest()
                     ->get();
             }
-    
+
             $view->with('unseenBombings', $unseenBombings);
         });
+
     }
 }

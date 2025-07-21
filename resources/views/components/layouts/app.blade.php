@@ -11,7 +11,7 @@
                 <ul class="mt-2 list-disc list-inside">
                     @foreach ($unseenBombings as $bombing)
                         <li>
-                            {{ $bombing->quantity }}  {{ $bombing->weapon->name }} launched from 
+                            {{ $bombing->quantity }}  {{ $bombing->weapon->name }} launched from
                             {{ $bombing->attackerCountry->name }} to your country.
                         </li>
                     @endforeach
