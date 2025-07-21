@@ -10,7 +10,7 @@ use Livewire\Volt\Component;
 use Livewire\WithPagination;
 
 // Use a full-page layout and import the pagination trait
-new #[Layout('components.layouts.app')] class extends Component {
+new #[Layout('components.layouts.app', ['title' => 'Marketplace'])] class extends Component {
     use WithPagination;
 
     // This property will be updated in real-time from the search input.
@@ -231,7 +231,7 @@ new #[Layout('components.layouts.app')] class extends Component {
 
             {{-- Pagination Links --}}
             <div class="mt-10">
-                {{ $weapons->links('vendor.pagination.tailwind') }}
+                {{ $weapons->links() }}
             </div>
         </section>
 

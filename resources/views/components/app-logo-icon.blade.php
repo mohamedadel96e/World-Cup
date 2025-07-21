@@ -7,4 +7,4 @@
 
 @endphp
 
-<img src="{{ $imageUrl }}" alt="App Logo" >
+<img src="{{ $imageUrl }}" alt="App Logo" class="rounded-xl">

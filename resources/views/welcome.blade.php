@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEFENSE COMMAND | Military Operations</title>
+    <title>World War II</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +13,7 @@
             theme: {
                 extend: {
 
-                    fontFamily: {   
+                    fontFamily: {
                         sans: ['Roboto Condensed', 'sans-serif'],
                     },
                     colors: {
@@ -50,37 +51,52 @@
             margin: 0;
         }
 
-        
+
         .military-border {
             border: 1px solid rgba(220, 38, 38, 0.3);
         }
-        
+
         .grid-pattern {
-            background-image: 
+            background-image:
                 linear-gradient(rgba(220, 38, 38, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
         }
-        
+
         .fade-in {
             animation: fadeIn 1s ease-in-out;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .pulse {
             animation: pulse 2s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
-        
+
         .status-indicator {
             width: 10px;
             height: 10px;
@@ -88,17 +104,17 @@
             display: inline-block;
             margin-right: 8px;
         }
-        
+
         .status-active {
             background-color: #dc2626;
             box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
         }
-        
+
         .terminal-text {
             font-family: 'Courier New', monospace;
             color: #dc2626;
         }
-        
+
         .rank-badge {
             width: 50px;
             height: 50px;
@@ -114,8 +130,52 @@
         }
     </style>
 </head>
+
 <body class="h-screen flex flex-col">
     <!-- Top Command Bar -->
+    <header class="w-full text-lg  not-has-[nav]:hidden pt-4 pr-4">
+        @if (Route::has('login'))
+
+        <nav class="flex items-center justify-between gap-4">
+            <div class="flex items-center">
+                <a href="{{ url('/') }}" class="text-gray-200 transition hover:text-red-600 @php
+                    if (request()->is('/')) {
+                        echo 'text-red-600';
+                    }
+                @endphp ">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="mx-2 text-gray-500">|</span>
+                <a href="{{ url('/history') }}" class="text-gray-200 transition hover:text-red-600 ">
+                    <i class="fas fa-history"></i> History
+                </a>
+            </div>
+            <div>
+                @auth
+                <a
+                    href="{{ url('/marketplace') }}"
+                    class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-lg leading-normal">
+                    Marketplace
+                </a>
+                @else
+                <a
+                    href="{{ route('login') }}"
+                    class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-lg leading-normal mr-1.5">
+                    Log in
+                </a>
+
+                @if (Route::has('register'))
+                <a
+                    href="{{ route('register') }}"
+                    class="inline-block px-5 py-1.5 text-white bg-red-600 hover:bg-red-700 dark:text-white rounded-sm text-lg leading-normal">
+                    Register
+                </a>
+                @endif
+                @endauth
+            </div>
+        </nav>
+        @endif
+    </header>
     <div class="flex items-center justify-between px-6 py-3 bg-black border-b border-red-700">
         <div class="flex items-center">
             <div class="status-indicator status-active"></div>
@@ -141,7 +201,7 @@
 
             <div class="mt-4 mb-8">
                 <p class="text-gray-400 leading-relaxed max-w-md">
-                    Elite military forces dedicated to national security and global stability. 
+                    Elite military forces dedicated to national security and global stability.
                     Our strategic operations ensure peace through strength and readiness.
                 </p>
             </div>
@@ -170,16 +230,16 @@
 
             <!-- Call to Action -->
             <div class="mt-6 flex flex-wrap gap-4">
-                <a href="{{ route(name: 'register') }}">
-                <button class="bg-red-700 text-white px-8 py-3 rounded-sm font-bold tracking-wider hover:bg-red-800 transition-colors pulse">
-                    <i class="fas fa-flag mr-2"></i>JOIN THE ARMY
-                </button>
+                <a href="{{ route(name: 'login') }}">
+                    <button class="bg-red-700 text-white px-8 py-3 rounded-sm font-bold tracking-wider hover:bg-red-800 transition-colors pulse">
+                        <i class="fas fa-flag mr-2"></i>JOIN THE ARMY
+                    </button>
                 </a>
 
                 <a href="{{ route(name: 'history') }}">
-                <button class="border border-red-700 text-gray-300 px-8 py-3 rounded-sm font-medium hover:bg-gray-800 transition-colors">
-                    HISTORICAL ARCHIVES
-                </button>
+                    <button class="border border-red-700 text-gray-300 px-8 py-3 rounded-sm font-medium hover:bg-gray-800 transition-colors">
+                        HISTORICAL ARCHIVES
+                    </button>
                 </a>
             </div>
         </div>
@@ -297,30 +357,30 @@
         // Update date and time
         function updateDateTime() {
             const now = new Date();
-            const date = now.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
+            const date = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric',
                 weekday: 'short'
             });
-            const time = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
+            const time = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
-                hour12: true 
+                hour12: true
             });
             document.getElementById('datetime').textContent = `${date.toUpperCase()} | ${time}`;
         }
-        
+
         // Initialize and update every second
         updateDateTime();
         setInterval(updateDateTime, 1000);
-        
+
         // Add military-style terminal typing effect
         const terminalText = "DEFENSE SYSTEMS ACTIVE // ALL UNITS REPORT READY STATUS // THREAT LEVEL: NORMAL // STANDING BY FOR ORDERS...";
         let index = 0;
         const terminalOutput = document.getElementById('terminal-output');
-        
+
         function typeTerminalText() {
             if (index < terminalText.length) {
                 terminalOutput.textContent += terminalText.charAt(index);
@@ -330,20 +390,21 @@
                 // Blinking cursor effect
                 setInterval(() => {
                     const cursorVisible = terminalOutput.textContent.endsWith('_');
-                    terminalOutput.textContent = cursorVisible 
-                        ? terminalOutput.textContent.slice(0, -1) 
-                        : terminalOutput.textContent + '_';
+                    terminalOutput.textContent = cursorVisible ?
+                        terminalOutput.textContent.slice(0, -1) :
+                        terminalOutput.textContent + '_';
                 }, 500);
             }
         }
-        
+
         // Start typing after a delay
         setTimeout(typeTerminalText, 1000);
-        
+
         // Add animation delays
         document.querySelectorAll('.fade-in').forEach((el, index) => {
             el.style.animationDelay = `${index * 0.1}s`;
         });
     </script>
 </body>
+
 </html>

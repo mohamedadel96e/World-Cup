@@ -84,6 +84,6 @@
 
     <!-- Pagination -->
     <div class="mt-6">
-        {{ $weapons->links('vendor.pagination.tailwind') }}
+        {{ $weapons->links() }}
     </div>
 </div>

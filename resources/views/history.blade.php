@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +17,7 @@
             overflow: hidden;
             background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCI+CjxyZWN0IHdpZHRoPSI1MCIgaGVpZ2h0PSI1MCIgZmlsbD0iIzA4MDgwOCIgLz4KPHBhdGggZD0iTTAgMEw1MCA1ME0yNSAwTDAgMjVNNTAgMjVMMjUgNTAiIHN0cm9rZT0iIzE0MTQxNCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPg==');
         }
+
         .status-indicator {
             width: 10px;
             height: 10px;
@@ -25,10 +27,12 @@
             background-color: #dc2626;
             box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
         }
+
         .leader-quote {
             border-left: 3px solid #dc2626;
             padding-left: 20px;
         }
+
         .map-container {
             position: relative;
             background: #262626;
@@ -36,11 +40,13 @@
             overflow: hidden;
             height: 200px;
         }
+
         .timeline-item {
             position: relative;
             padding-left: 30px;
             margin-bottom: 30px;
         }
+
         .timeline-item:before {
             content: "";
             position: absolute;
@@ -52,6 +58,7 @@
             background: #dc2626;
             box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
         }
+
         .timeline-item:after {
             content: "";
             position: absolute;
@@ -61,23 +68,28 @@
             width: 2px;
             background: #dc2626;
         }
+
         .timeline-item:last-child:after {
             display: none;
         }
+
         .battle-card {
             transition: all 0.3s ease;
             border: 1px solid #2c2c2c;
         }
+
         .battle-card:hover {
             border-color: #dc2626;
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
         }
+
         .tech-icon {
             font-size: 2rem;
             color: #dc2626;
             margin-bottom: 15px;
         }
+
         .classified-badge {
             position: absolute;
             top: 10px;
@@ -89,28 +101,41 @@
             border-radius: 3px;
             border: 1px solid #dc2626;
         }
+
         .fade-in {
             animation: fadeIn 1.5s ease-in-out;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .map-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             grid-gap: 8px;
             height: 100%;
         }
+
         .map-cell {
             background: #1a1a1a;
             border: 1px solid #2a2a2a;
             position: relative;
         }
+
         .map-cell.active {
             background: #3a1a1a;
             border-color: #dc2626;
         }
+
         .map-cell.active:after {
             content: "✪";
             position: absolute;
@@ -121,11 +146,13 @@
             font-size: 1.2rem;
             text-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
         }
+
         .section-title {
             position: relative;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+
         .section-title:after {
             content: "";
             position: absolute;
@@ -135,51 +162,77 @@
             height: 2px;
             background: linear-gradient(90deg, #dc2626, transparent);
         }
+
         .flicker {
             animation: flicker 3s infinite alternate;
         }
+
         @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
                 opacity: 1;
             }
-            20%, 24%, 55% {
+
+            20%,
+            24%,
+            55% {
                 opacity: 0.3;
             }
         }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col">
     <!-- Top Command Bar -->
 
     <header class="w-full text-lg  not-has-[nav]:hidden pt-4 pr-4">
         @if (Route::has('login'))
 
-            <nav class="flex items-center justify-end gap-4"> 
+        <nav class="flex items-center justify-between gap-4">
+            <div class="flex items-center">
+                <a href="{{ url('/') }}" class="text-gray-200 transition hover:text-red-600">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="mx-2 text-gray-500">|</span>
+                <a href="{{ url('/history') }}" class="text-gray-200 hover:text-red-600 @php
+                    if (request()->is('history')) {
+                        echo 'text-red-600';
+                    }
+                @endphp">
+                    <i class="fas fa-history"></i> History
+                </a>
+            </div>
+            <div>
                 @auth
-                    <a
-                        href="{{ url('/marketplace') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-lg leading-normal"
-                    >
-                        Marketplace
-                    </a>
+                <a
+                    href="{{ url('/marketplace') }}"
+                    class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-lg leading-normal">
+                    Marketplace
+                </a>
                 @else
-                    <a
-                        href="{{ route('login') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-lg leading-normal"
-                    >
-                        Log in
-                    </a>
+                <a
+                    href="{{ route('login') }}"
+                    class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-transparent hover:border-[#19140035] dark:hover:border-[#3E3E3A] rounded-sm text-lg leading-normal">
+                    Log in
+                </a>
 
-                    @if (Route::has('register'))
-                        <a
-                            href="{{ route('register') }}"
-                            class="inline-block px-5 py-1.5 text-white bg-red-600 hover:bg-red-700 dark:text-white rounded-sm text-lg leading-normal"
-                        >
-                            Register
-                        </a>
-                    @endif
+                @if (Route::has('register'))
+                <a
+                    href="{{ route('register') }}"
+                    class="inline-block px-5 py-1.5 text-white bg-red-600 hover:bg-red-700 dark:text-white rounded-sm text-lg leading-normal">
+                    Register
+                </a>
+                @endif
                 @endauth
-            </nav>
+            </div>
+        </nav>
         @endif
     </header>
 
@@ -204,7 +257,7 @@
             <div class="text-center mb-10">
                 <h1 class="text-4xl font-bold mt-6">
 
-                    <span class="text-gray-200">GERMAN WAR MACHINE</span> 
+                    <span class="text-gray-200">GERMAN WAR MACHINE</span>
                     <span class="text-red-600">1939-1945</span>
                 </h1>
                 <div class="mt-2 text-gray-500 text-sm">DOCUMENT CLASSIFICATION: TOP SECRET - EYES ONLY</div>
@@ -287,25 +340,25 @@
                     </p>
 
                     <div class="border border-red-700 border-dashed p-4 mt-6">
-                    <h3 class="text-xl font-bold text-gray-200">2025-????: THE LEGEND AWAKENS</h3>
-                    <p class="text-gray-200 font-bold">
-                        A dedicated team is rebuilding the army using modern technologies. PHP battalions are being deployed to digital fronts.
-                    </p>
-                    <div class="mt-2 flex items-center">
-                        <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700 mr-2">PHP 8.3</div>
-                        <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700 mr-2">LARAVEL</div>
-                        <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700">DIGITAL BLITZKRIEG</div>
-                    </div>
-                    <br>
+                        <h3 class="text-xl font-bold text-gray-200">2025-????: THE LEGEND AWAKENS</h3>
+                        <p class="text-gray-200 font-bold">
+                            A dedicated team is rebuilding the army using modern technologies. PHP battalions are being deployed to digital fronts.
+                        </p>
+                        <div class="mt-2 flex items-center">
+                            <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700 mr-2">PHP 8.3</div>
+                            <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700 mr-2">LARAVEL</div>
+                            <div class="bg-gray-800 px-2 py-1 text-xs text-red-500 border border-red-700">DIGITAL BLITZKRIEG</div>
+                        </div>
+                        <br>
                     </div>
                 </div>
             </div>
 
-            
+
             <!-- New Content: Eastern Front Campaigns -->
             <div class="mb-12 fade-in">
                 <h2 class="text-2xl font-bold text-gray-200 mb-6 section-title">EASTERN FRONT CAMPAIGNS</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="battle-card bg-gray-900 p-6 rounded">
                         <h3 class="text-xl font-bold text-red-600 mb-3">OPERATION BARBAROSSA</h3>
@@ -367,11 +420,11 @@
                 </div>
             </div>
 
-            
+
             <!-- New Content: Military Technology -->
             <div class="mb-12 fade-in">
                 <h2 class="text-2xl font-bold text-gray-200 mb-6 section-title">MILITARY TECHNOLOGY</h2>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div class="bg-gray-900 p-6 rounded border border-gray-800">
                         <div class="tech-icon">

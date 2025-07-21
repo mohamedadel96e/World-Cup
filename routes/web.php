@@ -18,15 +18,15 @@ use Livewire\Volt\Volt;
 | Public Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn () => view('welcome'))->name('home');
-Route::get('history', fn () => view('history'))->name('history');
+Route::get('/', fn () => view('welcome'))->name('home')->middleware('throttle:50,1');
+Route::get('history', fn () => view('history'))->name('history')->middleware('throttle:50,1');
 
 /*
 |--------------------------------------------------------------------------
 | Authenticated User Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'throttle:100,1'])->group(function () {
 
     // Marketplace
     Volt::route('marketplace', 'marketplace.index')->name('marketplace');
@@ -106,7 +106,7 @@ Route::middleware(['auth', EnsureUserHasRole::class . ':admin'])->prefix('admin'
 | Supply Routes (General Only)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general'])
+Route::middleware(['auth', 'verified', EnsureUserHasRole::class . ':general', 'throttle:100,1'])
     ->prefix('supply')
     ->name('supply.')
     ->group(function () {
