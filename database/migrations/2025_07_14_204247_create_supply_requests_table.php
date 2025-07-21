@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('supply_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users'); // The General who made the request
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // The General who made the request
             $table->enum('status', ['pending', 'accepted', 'rejected', 'completed', 'failed'])->default('pending');
             $table->string('csv_path')->nullable(); // Path to the CSV file for processing
             $table->timestamps();

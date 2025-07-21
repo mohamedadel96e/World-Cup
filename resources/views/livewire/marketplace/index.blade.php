@@ -146,7 +146,7 @@ new #[Layout('components.layouts.app', ['title' => 'Marketplace'])] class extend
             </div>
         </section>
 
-        <section class="flex justify-center">
+        <section class="flex justify-center gap-3">
             <div class="inline-flex items-center gap-4 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-6 py-3 shadow-sm">
                 <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">National Treasury:</span>
                 <span class="text-xl font-bold text-green-600 dark:text-green-400">
