@@ -64,7 +64,7 @@ new #[Layout('components.layouts.app')] class extends Component {
         $supplyRequest = SupplyRequest::create([
             'user_id' => $currentUser->id,
             'status' => 'pending', // This request is now pending fulfillment
-            'csv_path' => $filename, // Store the path to the CSV file for processing later
+            'csv_path' => $this->csvUrl, // Store the path to the CSV file for processing later
         ]); // Want to add the path to the CSV file here for needing it when processing the request
 
         foreach ($requestedWeapons as $item) {

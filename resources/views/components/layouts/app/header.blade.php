@@ -21,7 +21,7 @@
                 {{ __('Marketplace') }}
             </flux:navbar.item>
             @if(auth()->user()->role === 'general' || auth()->user()->role === 'country')
-            <flux:navbar.item icon="shield-check" :href="route('inventory.index')" :current="request()->routeIs('inventory.index')" wire:navigate>
+            <flux:navbar.item icon="shopping-cart" :href="route('inventory.index')" :current="request()->routeIs('inventory.index')" wire:navigate>
                 {{ __('Inventory') }}
             </flux:navbar.item>
             @endif

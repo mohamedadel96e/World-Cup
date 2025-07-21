@@ -23,6 +23,7 @@ class UpdateUserRequest extends FormRequest
             'email',
             Rule::unique(User::class)->ignore($this->route('user', 'email')),
             ],
+            'balance' => 'required|numeric|min:0',
             'password' => 'nullable|string|min:8|confirmed',
             'role' => 'required|string|in:admin,country,general',
             'country_id' => 'required_if:role,country,general|exists:countries,id',

@@ -21,16 +21,26 @@ new #[Layout('components.layouts.app')] class extends Component {
     public ?float $base_price = null;
     public ?int $discount_percentage = 0;
     public $image_path; // For new image uploads
+    public ?int $country_id = null;
 
     // Data for the view
     public $categories;
-    public $country;
+    public $countries; // New: For admin country list
+    public $userCountry;
 
     public function mount(): void
     {
         $this->authorize('create', Weapon::class);
         $this->categories = Category::all();
-        $this->country = Auth::user()->country;
+        $this->userCountry = Auth::user()->country;
+
+        // If the user is an admin, load all countries for the dropdown.
+        // Otherwise, default to their own country.
+        if (Auth::user()->isAdmin()) {
+            $this->countries = Country::all();
+        } else {
+            $this->country_id = $this->userCountry->id;
+        }
     }
 
     public function save(CloudinaryUploadService $cloudinary): void
@@ -42,6 +52,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             'base_price' => 'required|numeric|min:0',
             'discount_percentage' => 'nullable|integer|min:0|max:100',
             'image_path' => 'required|image|mimes:jpeg,png,jpg,webp|max:4096',
+            'country_id' => 'required|integer|exists:countries,id', // Ensure country is selected
         ]);
 
         // Handle the image upload
@@ -54,8 +65,9 @@ new #[Layout('components.layouts.app')] class extends Component {
             return;
         }
 
+        // The country_id is now dynamically set from the form
         Weapon::create([
-            'country_id' => $this->country->id,
+            'country_id' => $this->country_id,
             'name' => $this->name,
             'description' => $this->description,
             'category_id' => $this->category_id,
@@ -64,8 +76,7 @@ new #[Layout('components.layouts.app')] class extends Component {
             'image_path' => $uploadedUrl,
         ]);
 
-        session()->flash('status', 'Weapon successfully added to your arsenal!');
-        // No additional redirect needed here
+        session()->flash('status', 'Weapon successfully added to the arsenal!');
         $this->redirect(route('marketplace'), navigate: true);
     }
 
@@ -74,20 +85,25 @@ new #[Layout('components.layouts.app')] class extends Component {
     {
         $category = $this->categories->firstWhere('id', $this->category_id);
 
+        // Determine which country to show in the preview
+        $previewCountry = Auth::user()->isAdmin() && $this->country_id
+            ? $this->countries->firstWhere('id', $this->country_id)
+            : $this->userCountry;
+
         $weapon = new Weapon([
             'name' => $this->name ?: 'Weapon Name',
             'description' => $this->description ?: 'A brief description of the weapon will appear here.',
             'base_price' => $this->base_price,
             'discount_percentage' => $this->discount_percentage,
             'image_path' => $this->image_path ? $this->image_path->temporaryUrl() : null,
-            'country_id' => $this->country->id,
+            'country_id' => $previewCountry->id,
             'category_id' => $this->category_id,
         ]);
 
         if ($category) {
             $weapon->setRelation('category', $category);
         }
-        $weapon->setRelation('country', $this->country);
+        $weapon->setRelation('country', $previewCountry);
 
         return $weapon;
     }
@@ -95,6 +111,11 @@ new #[Layout('components.layouts.app')] class extends Component {
 }; ?>
 
 <div>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+            New Weapon Deployment Studio
+        </h2>
+    </x-slot>
 
     <div class="py-2">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -104,16 +125,30 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="lg:col-span-3 space-y-8">
                     <form wire:submit="save" class="space-y-6 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-xl">
 
+                        <!-- Admin-only Country Selection -->
+                        @if(auth()->user()->isAdmin())
+                            <div class="space-y-2">
+                                <label for="country_id" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Manufacturing Country</label>
+                                <select wire:model.live="country_id" id="country_id" required class="w-full rounded-lg border-2 p-1.5 border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:outline-none focus:ring-0 focus:ring-offset-0">
+                                    <option value="">Select a country...</option>
+                                    @foreach($this->countries as $country)
+                                        <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('country_id') <p class="text-sm text-red-500">{{ $message }}</p> @enderror
+                            </div>
+                        @endif
+
                         <div class="space-y-2">
                             <label for="name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Weapon Name</label>
-                            <input type="text" wire:model.live.debounce="name" id="name" required class="w-full rounded-lg border-2 p-1.5  dark:border-zinc-700 dark:bg-zinc-900 shadow-sm border-orange-500 focus:outline-none focus:ring-0 focus:ring-offset-0">
+                            <input type="text" wire:model.live.debounce="name" id="name" required class="w-full rounded-lg border-2 p-1.5 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm border-orange-500 focus:outline-none focus:ring-0 focus:ring-offset-0">
                             @error('name') <p class="text-sm text-red-500">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="space-y-2">
                             <label for="category_id" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Category</label>
-                            <select wire:model.live.debounce="category_id" id="category_id" required class="w-full  rounded-lg border-2 p-1.5 border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:outline-none focus:ring-0 focus:ring-offset-0">
-                                <option  value="">Select a category...</option>
+                            <select wire:model.live.debounce="category_id" id="category_id" required class="w-full rounded-lg border-2 p-1.5 border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:outline-none focus:ring-0 focus:ring-offset-0">
+                                <option value="">Select a category...</option>
                                 @foreach($this->categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
@@ -130,7 +165,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="space-y-2">
                                 <label for="base_price" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                    Base Price (in {{ $this->country->currency_code }})
+                                    Base Price (in {{ $this->getPreviewWeaponProperty()->country->currency_code }})
                                 </label>
                                 <input type="number" step="0.01" wire:model.live.debounce="base_price" id="base_price" required class="w-full rounded-lg border-2 p-1.5 border-zinc-300 dark:border-zinc-700 dark:bg-zinc-900 shadow-sm focus:outline-none focus:ring-0 focus:ring-offset-0">
                                 @error('base_price') <p class="text-sm text-red-500">{{ $message }}</p> @enderror
@@ -162,7 +197,7 @@ new #[Layout('components.layouts.app')] class extends Component {
                 <div class="lg:col-span-2">
                     <div class="sticky top-24 space-y-4">
                         <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">Live Preview</h3>
-                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true" :userCountry="$this->country"/>
+                        <x-marketplace.weapons.weapon-card :weapon="$this->previewWeapon" :discount="$this->discount_percentage" :manageImage="true" :userCountry="$this->userCountry"/>
                     </div>
                 </div>
 
@@ -170,4 +205,3 @@ new #[Layout('components.layouts.app')] class extends Component {
         </div>
     </div>
 </div>
-

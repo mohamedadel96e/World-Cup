@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'country_id' => Country::inRandomOrder()->value('id'), // Picks a random existing country ID
-            'profile_picture' => fake()->imageUrl(640, 480, 'people', true, 'Faker', true),
+            'profile_picture' => null,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

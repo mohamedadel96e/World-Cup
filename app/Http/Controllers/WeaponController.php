@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Weapon;
-use App\Services\CsvGeneration;
 use App\Services\CurrencyConversionService;
 use App\Models\Bombing;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +25,6 @@ class WeaponController extends Controller
         // Placeholder for discount logic. This will be implemented later.
         $discount = 0;
         if ($userCountry && $weapon->country && $userCountry->team_id === $weapon->country->team_id) {
-            // A simple example: apply a 10% discount if on the same team.
-            // In a real scenario, you would fetch this from a dedicated discount model.
             $discount = $weapon->discount_percentage ?? 0;
         }
 
