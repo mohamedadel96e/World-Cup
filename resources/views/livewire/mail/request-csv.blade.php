@@ -140,12 +140,18 @@ new #[Layout('components.layouts.app')] class extends Component {
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 @foreach($weaponGroup as $weapon)
                                     <div class="flex flex-col gap-2 bg-orange-50 dark:bg-zinc-800 rounded-xl p-4 border border-orange-100 dark:border-zinc-700 shadow-sm">
-                                        <label for="weapon_{{ $weapon->id }}" class="font-semibold text-zinc-700 dark:text-zinc-200">
+                                        <label for="weapon_{{ $weapon->id }}" class="font-semibold text-zinc-700 dark:text-zinc-200 flex items-center gap-2">
+                                            @if($weapon->country && $weapon->country->flag)
+                                                <img src="{{ $weapon->country->flag }}"
+                                                     alt="{{ $weapon->country->name }}"
+                                                     class="h-5 w-5 rounded-full object-cover border border-zinc-300 dark:border-zinc-600"
+                                                     title="{{ $weapon->country->name }}">
+                                            @endif
                                             {{ $weapon->name }}
                                         </label>
                                         <input id="weapon_{{ $weapon->id }}" type="number" min="0"
                                                wire:model="quantities.{{ $weapon->id }}"
-                                               class="w-full rounded-lg border-2 border-orange-200 dark:border-zinc-700 focus:border-orange-500 focus:ring-orange-500 bg-white dark:bg-zinc-900 px-3 py-2 text-lg text-zinc-800 dark:text-zinc-100 shadow-sm"
+                                               class="w-full rounded-lg border-2 border-orange-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-lg text-zinc-800 dark:text-zinc-100 shadow-sm"
                                                placeholder="0"
                                         />
                                     </div>
